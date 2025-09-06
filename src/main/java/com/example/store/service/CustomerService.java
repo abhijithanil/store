@@ -1,9 +1,8 @@
 package com.example.store.service;
 
 import com.example.store.dto.CustomerDTO;
+import com.example.store.dto.PagedResponse;
 import com.example.store.entity.Customer;
-
-import java.util.List;
 
 /**
  * Service interface for customer operations following SOLID principles. Interface Segregation: Defines only
@@ -12,11 +11,15 @@ import java.util.List;
 public interface CustomerService {
 
     /**
-     * Retrieves all customers.
+     * Retrieves all customers with pagination support.
      *
-     * @return list of all customers
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort direction (asc/desc)
+     * @return paged response of customers
      */
-    List<CustomerDTO> getAllCustomers();
+    PagedResponse<CustomerDTO> getAllCustomers(int page, int size, String sortBy, String sortOrder);
 
     /**
      * Creates a new customer.
@@ -27,13 +30,16 @@ public interface CustomerService {
     CustomerDTO createCustomer(Customer customer);
 
     /**
-     * Searches for customers whose name contains the given query string. The search is case-insensitive and matches any
-     * substring within customer names.
+     * Searches for customers whose name contains the given query string with pagination support.
      *
      * @param query the search query string
-     * @return list of customers matching the search criteria
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort direction (asc/desc)
+     * @return paged response of customers matching the search criteria
      */
-    List<CustomerDTO> searchCustomersByName(String query);
+    PagedResponse<CustomerDTO> searchCustomersByName(String query, int page, int size, String sortBy, String sortOrder);
 
     /**
      * Retrieves a customer by ID.
@@ -42,20 +48,4 @@ public interface CustomerService {
      * @return the customer DTO
      */
     CustomerDTO getCustomerById(Long id);
-
-    /**
-     * Updates an existing customer.
-     *
-     * @param id the customer ID
-     * @param customer the updated customer data
-     * @return the updated customer DTO
-     */
-    CustomerDTO updateCustomer(Long id, Customer customer);
-
-    /**
-     * Deletes a customer by ID.
-     *
-     * @param id the customer ID
-     */
-    void deleteCustomer(Long id);
 }

@@ -1,6 +1,7 @@
 package com.example.store.service.impl;
 
 import com.example.store.dto.CustomerDTO;
+import com.example.store.dto.PagedResponse;
 import com.example.store.entity.Customer;
 import com.example.store.exception.CustomerNotFoundException;
 import com.example.store.exception.ValidationException;
@@ -12,10 +13,15 @@ import com.example.store.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,20 +40,38 @@ public class CustomerServiceImpl implements CustomerService {
     private final ValidationService validationService;
 
     @Override
-    public List<CustomerDTO> getAllCustomers() {
-        log.debug("Retrieving all customers");
+    @Cacheable(value = "pagedCustomers", key = "#page + '_' + #size + '_' + #sortBy + '_' + #sortOrder")
+    public PagedResponse<CustomerDTO> getAllCustomers(int page, int size, String sortBy, String sortOrder) {
+        log.debug(
+                "Retrieving customers with pagination - page: {}, size: {}, sortBy: {}, sortOrder: {}",
+                page,
+                size,
+                sortBy,
+                sortOrder);
         try {
-            List<Customer> customers = customerRepository.findAll();
-            log.debug("Found {} customers", customers.size());
-            return customerMapper.customersToCustomerDTOs(customers);
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+            Page<Customer> customerPage = customerRepository.findAll(pageable);
+
+            log.debug(
+                    "Found {} customers on page {} of {}",
+                    customerPage.getContent().size(),
+                    page + 1,
+                    customerPage.getTotalPages());
+            return PagedResponse.of(
+                    customerPage.map(customer -> customerMapper.customerToCustomerDTO(customer)), sortBy, sortOrder);
         } catch (Exception e) {
-            log.error("Error retrieving all customers", e);
+            log.error("Error retrieving customers with pagination", e);
             throw new RuntimeException("Failed to retrieve customers", e);
         }
     }
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = {"customers", "pagedCustomers"},
+            allEntries = true)
     public CustomerDTO createCustomer(Customer customer) {
         log.debug("Creating new customer: {}", customer);
 
@@ -69,34 +93,51 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDTO> searchCustomersByName(String query) {
-        log.debug("Searching customers with query: {}", query);
+    public PagedResponse<CustomerDTO> searchCustomersByName(
+            String query, int page, int size, String sortBy, String sortOrder) {
+        log.debug(
+                "Searching customers with pagination - query: {}, page: {}, size: {}, sortBy: {}, sortOrder: {}",
+                query,
+                page,
+                size,
+                sortBy,
+                sortOrder);
 
         try {
             // Validate search query
             validationService.validateSearchQuery(query);
 
-            List<Customer> customers;
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+            Page<Customer> customerPage;
             if (query == null || query.trim().isEmpty()) {
-                log.debug("Empty query, returning all customers");
-                customers = customerRepository.findAll();
+                log.debug("Empty query, returning all customers with pagination");
+                customerPage = customerRepository.findAll(pageable);
             } else {
                 String sanitizedQuery = query.trim();
-                customers = customerRepository.findByNameContainingIgnoreCase(sanitizedQuery);
-                log.debug("Found {} customers matching query: {}", customers.size(), sanitizedQuery);
+                customerPage = customerRepository.findByNameContainingIgnoreCase(sanitizedQuery, pageable);
+                log.debug(
+                        "Found {} customers matching query: {} on page {} of {}",
+                        customerPage.getContent().size(),
+                        sanitizedQuery,
+                        page + 1,
+                        customerPage.getTotalPages());
             }
 
-            return customerMapper.customersToCustomerDTOs(customers);
+            return PagedResponse.of(
+                    customerPage.map(customer -> customerMapper.customerToCustomerDTO(customer)), sortBy, sortOrder);
         } catch (ValidationException e) {
             log.warn("Validation error in search: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            log.error("Error searching customers with query: {}", query, e);
+            log.error("Error searching customers with pagination - query: {}", query, e);
             throw new RuntimeException("Failed to search customers", e);
         }
     }
 
     @Override
+    @Cacheable(value = "customers", key = "#id")
     public CustomerDTO getCustomerById(Long id) {
         log.debug("Retrieving customer with ID: {}", id);
 
@@ -116,59 +157,6 @@ public class CustomerServiceImpl implements CustomerService {
         } catch (Exception e) {
             log.error("Error retrieving customer with ID: {}", id, e);
             throw new RuntimeException("Failed to retrieve customer", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public CustomerDTO updateCustomer(Long id, Customer customer) {
-        log.debug("Updating customer with ID: {}", id);
-
-        validationService.validateCustomerId(id);
-        validationService.validateCustomerName(customer.getName());
-
-        try {
-            Optional<Customer> existingCustomer = customerRepository.findById(id);
-            if (existingCustomer.isEmpty()) {
-                log.warn("Customer not found for update with ID: {}", id);
-                throw CustomerNotFoundException.withId(id);
-            }
-
-            Customer customerToUpdate = existingCustomer.get();
-            customerToUpdate.setName(validationService.sanitizeName(customer.getName()));
-
-            Customer updatedCustomer = customerRepository.save(customerToUpdate);
-            log.info("Successfully updated customer with ID: {}", id);
-
-            return customerMapper.customerToCustomerDTO(updatedCustomer);
-        } catch (CustomerNotFoundException | ValidationException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error updating customer with ID: {}", id, e);
-            throw new RuntimeException("Failed to update customer", e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteCustomer(Long id) {
-        log.debug("Deleting customer with ID: {}", id);
-
-        validationService.validateCustomerId(id);
-
-        try {
-            if (!customerRepository.existsById(id)) {
-                log.warn("Customer not found for deletion with ID: {}", id);
-                throw CustomerNotFoundException.withId(id);
-            }
-
-            customerRepository.deleteById(id);
-            log.info("Successfully deleted customer with ID: {}", id);
-        } catch (CustomerNotFoundException | ValidationException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Error deleting customer with ID: {}", id, e);
-            throw new RuntimeException("Failed to delete customer", e);
         }
     }
 }

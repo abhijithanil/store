@@ -1,8 +1,10 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateOrderRequest;
 import com.example.store.dto.OrderDTO;
-import com.example.store.entity.Order;
 import com.example.store.service.OrderService;
+
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +46,27 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/all")
+    @Operation(summary = "Get all orders with pagination", description = "Retrieve a paginated list of all orders")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Successfully retrieved orders",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = com.example.store.dto.PagedResponse.class)))
+            })
+    public com.example.store.dto.PagedResponse<OrderDTO> getAllOrdersPaged(
+            @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size", example = "20") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort field", example = "id") @RequestParam(defaultValue = "id") String sortBy,
+            @Parameter(description = "Sort direction (asc/desc)", example = "asc") @RequestParam(defaultValue = "asc")
+                    String sortOrder) {
+        return orderService.getAllOrders(page, size, sortBy, sortOrder);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID", description = "Retrieve a specific order by its ID")
     @ApiResponses(
@@ -77,7 +100,7 @@ public class OrderController {
                                         schema = @Schema(implementation = OrderDTO.class))),
                 @ApiResponse(responseCode = "400", description = "Invalid order data")
             })
-    public OrderDTO createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order);
+    public OrderDTO createOrder(@Valid @RequestBody CreateOrderRequest request) {
+        return orderService.createOrder(request);
     }
 }

@@ -1,5 +1,7 @@
 package com.example.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 import lombok.Data;
@@ -22,6 +24,7 @@ public class Order {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Customer customer;
 
     @ManyToMany(
@@ -31,5 +34,6 @@ public class Order {
             name = "order_product",
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
 }

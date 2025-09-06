@@ -1,8 +1,8 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateOrderRequest;
 import com.example.store.dto.OrderDTO;
 import com.example.store.entity.Customer;
-import com.example.store.entity.Order;
 import com.example.store.mapper.CustomerMapper;
 import com.example.store.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +35,7 @@ class OrderControllerTests {
     @MockitoBean
     private OrderService orderService;
 
-    private Order order;
+    private CreateOrderRequest createOrderRequest;
     private Customer customer;
     private OrderDTO orderDTO;
 
@@ -45,10 +45,10 @@ class OrderControllerTests {
         customer.setName("John Doe");
         customer.setId(1L);
 
-        order = new Order();
-        order.setDescription("Test Order");
-        order.setId(1L);
-        order.setCustomer(customer);
+        createOrderRequest = new CreateOrderRequest();
+        createOrderRequest.setDescription("Test Order");
+        createOrderRequest.setCustomerId(1L);
+        createOrderRequest.setProductIds(List.of(1L, 2L));
 
         orderDTO = new OrderDTO();
         orderDTO.setDescription("Test Order");
@@ -58,11 +58,11 @@ class OrderControllerTests {
 
     @Test
     void testCreateOrder() throws Exception {
-        when(orderService.createOrder(order)).thenReturn(orderDTO);
+        when(orderService.createOrder(createOrderRequest)).thenReturn(orderDTO);
 
         mockMvc.perform(post("/order")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(order)))
+                        .content(objectMapper.writeValueAsString(createOrderRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"));
     }

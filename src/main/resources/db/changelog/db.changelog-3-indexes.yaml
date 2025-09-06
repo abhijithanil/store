@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-performance-indexes
+      author: system
+      comment: Add database indexes for performance optimization
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists:
+                indexName: idx_customer_name
+      changes:
+        # Index on customer name for search queries
+        - createIndex:
+            tableName: customer
+            indexName: idx_customer_name
+            columns:
+              - column:
+                  name: name
+            unique: false
+            
+        # Index on product description for search queries  
+        - createIndex:
+            tableName: product
+            indexName: idx_product_description
+            columns:
+              - column:
+                  name: description
+            unique: false
+            
+        # Index on order customer_id foreign key
+        - createIndex:
+            tableName: "order"
+            indexName: idx_order_customer_id
+            columns:
+              - column:
+                  name: customer_id
+            unique: false
+            
+        # Index on order_product join table for better performance
+        - createIndex:
+            tableName: order_product
+            indexName: idx_order_product_order_id
+            columns:
+              - column:
+                  name: order_id
+            unique: false
+            
+        - createIndex:
+            tableName: order_product
+            indexName: idx_order_product_product_id
+            columns:
+              - column:
+                  name: product_id
+            unique: false
+            
+        # Composite index for order_product table
+        - createIndex:
+            tableName: order_product
+            indexName: idx_order_product_composite
+            columns:
+              - column:
+                  name: order_id
+              - column:
+                  name: product_id
+            unique: true

@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import com.example.store.dto.PagedResponse;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
 
@@ -12,7 +13,18 @@ import java.util.List;
 public interface ProductService {
 
     /**
-     * Retrieves all products.
+     * Retrieves all products with pagination support.
+     *
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort direction (asc/desc)
+     * @return paged response of products with their associated order IDs
+     */
+    PagedResponse<ProductDTO> getAllProducts(int page, int size, String sortBy, String sortOrder);
+
+    /**
+     * Retrieves all products (legacy method for backward compatibility).
      *
      * @return list of all products with their associated order IDs
      */
@@ -51,8 +63,21 @@ public interface ProductService {
     void deleteProduct(Long id);
 
     /**
-     * Searches for products whose description contains the given query string. The search is case-insensitive and
-     * matches any substring within product descriptions.
+     * Searches for products whose description contains the given query string with pagination support.
+     *
+     * @param query the search query string
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort direction (asc/desc)
+     * @return paged response of products matching the search criteria
+     */
+    PagedResponse<ProductDTO> searchProductsByDescription(
+            String query, int page, int size, String sortBy, String sortOrder);
+
+    /**
+     * Searches for products whose description contains the given query string (legacy method for backward
+     * compatibility).
      *
      * @param query the search query string
      * @return list of products matching the search criteria
@@ -60,14 +85,36 @@ public interface ProductService {
     List<ProductDTO> searchProductsByDescription(String query);
 
     /**
-     * Retrieves products that are contained in orders.
+     * Retrieves products that are contained in orders with pagination support.
+     *
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort direction (asc/desc)
+     * @return paged response of products that have associated orders
+     */
+    PagedResponse<ProductDTO> getProductsWithOrders(int page, int size, String sortBy, String sortOrder);
+
+    /**
+     * Retrieves products that are contained in orders (legacy method for backward compatibility).
      *
      * @return list of products that have associated orders
      */
     List<ProductDTO> getProductsWithOrders();
 
     /**
-     * Retrieves products that are not contained in any orders.
+     * Retrieves products that are not contained in any orders with pagination support.
+     *
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
+     * @param sortOrder the sort direction (asc/desc)
+     * @return paged response of products that have no associated orders
+     */
+    PagedResponse<ProductDTO> getProductsWithoutOrders(int page, int size, String sortBy, String sortOrder);
+
+    /**
+     * Retrieves products that are not contained in any orders (legacy method for backward compatibility).
      *
      * @return list of products that have no associated orders
      */

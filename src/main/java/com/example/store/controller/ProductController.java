@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +49,29 @@ public class ProductController {
             })
     public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts();
+    }
+
+    @GetMapping("/all")
+    @Operation(
+            summary = "Get all products with pagination",
+            description = "Retrieve a paginated list of all products with their associated order IDs")
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Successfully retrieved products",
+                        content =
+                                @Content(
+                                        mediaType = "application/json",
+                                        schema = @Schema(implementation = com.example.store.dto.PagedResponse.class)))
+            })
+    public com.example.store.dto.PagedResponse<ProductDTO> getAllProductsPaged(
+            @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size", example = "20") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort field", example = "id") @RequestParam(defaultValue = "id") String sortBy,
+            @Parameter(description = "Sort direction (asc/desc)", example = "asc") @RequestParam(defaultValue = "asc")
+                    String sortOrder) {
+        return productService.getAllProducts(page, size, sortBy, sortOrder);
     }
 
     @PostMapping
@@ -111,25 +133,11 @@ public class ProductController {
         return productService.updateProduct(id, product);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete product", description = "Delete a product by ID")
-    @ApiResponses(
-            value = {
-                @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
-                @ApiResponse(responseCode = "404", description = "Product not found"),
-                @ApiResponse(responseCode = "400", description = "Invalid product ID")
-            })
-    public ResponseEntity<Void> deleteProduct(
-            @Parameter(description = "Product ID", required = true, example = "1") @PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/search")
     @Operation(
-            summary = "Search products by description",
+            summary = "Search products by description with pagination",
             description =
-                    "Search for products whose description contains the specified query string (case-insensitive)")
+                    "Search for products whose description contains the specified query string with pagination support")
     @ApiResponses(
             value = {
                 @ApiResponse(
@@ -138,50 +146,21 @@ public class ProductController {
                         content =
                                 @Content(
                                         mediaType = "application/json",
-                                        schema = @Schema(implementation = ProductDTO.class))),
+                                        schema = @Schema(implementation = com.example.store.dto.PagedResponse.class))),
                 @ApiResponse(responseCode = "400", description = "Invalid search query")
             })
-    public List<ProductDTO> searchProducts(
+    public com.example.store.dto.PagedResponse<ProductDTO> searchProductsPaged(
             @Parameter(
                             description = "Search query string to match against product descriptions",
                             required = false,
                             example = "laptop")
                     @RequestParam(value = "q", required = false)
-                    String query) {
-        return productService.searchProductsByDescription(query);
-    }
-
-    @GetMapping("/with-orders")
-    @Operation(summary = "Get products with orders", description = "Retrieve products that are contained in orders")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Successfully retrieved products with orders",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = ProductDTO.class)))
-            })
-    public List<ProductDTO> getProductsWithOrders() {
-        return productService.getProductsWithOrders();
-    }
-
-    @GetMapping("/without-orders")
-    @Operation(
-            summary = "Get products without orders",
-            description = "Retrieve products that are not contained in any orders")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Successfully retrieved products without orders",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = ProductDTO.class)))
-            })
-    public List<ProductDTO> getProductsWithoutOrders() {
-        return productService.getProductsWithoutOrders();
+                    String query,
+            @Parameter(description = "Page number (0-based)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size", example = "20") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "Sort field", example = "id") @RequestParam(defaultValue = "id") String sortBy,
+            @Parameter(description = "Sort direction (asc/desc)", example = "asc") @RequestParam(defaultValue = "asc")
+                    String sortOrder) {
+        return productService.searchProductsByDescription(query, page, size, sortBy, sortOrder);
     }
 }
