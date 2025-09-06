@@ -1,98 +1,89 @@
-# Google Cloud Build configuration for Spring Boot Store Application
 steps:
-  # Step 1: Run tests and generate coverage report
-  - name: 'openjdk:17-jdk-slim'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "🔍 Running tests and generating coverage report..."
-        ./gradlew test jacocoTestReport
-        echo "✅ Tests completed successfully"
-    env:
-      - 'GRADLE_OPTS=-Dorg.gradle.daemon=false'
+  # =============================================================================
+  # == 1. Run Unit & Integration Tests                                         ==
+  # =============================================================================
+  - name: 'gradle:8.5-jdk17-alpine'
+    id: Run-Tests
+    entrypoint: './gradlew'
+    args: ['test', 'jacocoTestReport']
+    waitFor: ['-']
 
-  # Step 2: Build the application
-  - name: 'openjdk:17-jdk-slim'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "🔨 Building application..."
-        ./gradlew build -x test
-        echo "✅ Build completed successfully"
-    env:
-      - 'GRADLE_OPTS=-Dorg.gradle.daemon=false'
+  # =============================================================================
+  # == 2. Build the Application JAR                                            ==
+  # =============================================================================
+  - name: 'gradle:8.5-jdk17-alpine'
+    id: Build-Application
+    entrypoint: './gradlew'
+    args: ['build', '-x', 'test', '--no-daemon']
+    waitFor:
+      - Run-Tests
 
-  # Step 3: Build Docker image
+  # =============================================================================
+  # == 3. Retrieve Docker Hub Password from Secret Manager                     ==
+  # =============================================================================
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Get-Docker-Password
+    entrypoint: 'gcloud'
+    args:
+      - 'secrets'
+      - 'versions'
+      - 'access'
+      - 'latest'
+      - '--secret=dockerhub-password'
+      - '--project=inspire26'
+      - '--format=get(payload.data)'
+      - '|'
+      - 'tr'
+      - '_-'
+      - '/+'
+      - '|'
+      - 'base64'
+      - '-d'
+      - '>'
+      - '/workspace/docker-password.txt'
+    waitFor:
+      - Build-Application
+
+  # =============================================================================
+  # == 4. Login to Docker Hub                                                  ==
+  # =============================================================================
   - name: 'gcr.io/cloud-builders/docker'
+    id: Docker-Login
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'docker login -u="aa061872" --password-stdin < /workspace/docker-password.txt'
+    waitFor:
+      - Get-Docker-Password
+
+  # =============================================================================
+  # == 5. Build Docker Image                                                   ==
+  # =============================================================================
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build-Docker-Image
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/store-app:$COMMIT_SHA'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/store-app:latest'
+      - 'aa061872/store-app:$COMMIT_SHA'
       - '.'
-    dir: '.'
+    waitFor:
+      - Docker-Login
 
-  # Step 4: Push Docker image to Google Container Registry
+  # =============================================================================
+  # == 6. Push Docker Image to Docker Hub                                      ==
+  # =============================================================================
   - name: 'gcr.io/cloud-builders/docker'
+    id: Push-Docker-Image
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/store-app:$COMMIT_SHA'
+      - 'aa061872/store-app:$COMMIT_SHA'
+    waitFor:
+      - Build-Docker-Image
 
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/store-app:latest'
-
-  # Step 5: Run API tests against the built application
-  - name: 'gcr.io/$PROJECT_ID/store-app:$COMMIT_SHA'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "🚀 Starting application for API tests..."
-        java -jar /app.jar &
-        APP_PID=$$!
-        
-        # Wait for application to start
-        echo "⏳ Waiting for application to start..."
-        for i in {1..30}; do
-          if curl -f http://localhost:8080/actuator/health >/dev/null 2>&1; then
-            echo "✅ Application is ready!"
-            break
-          fi
-          echo "Attempt $$i: Application not ready yet..."
-          sleep 10
-        done
-        
-        # Run API tests
-        echo "🧪 Running API tests..."
-        chmod +x /workspace/scripts/test-api-ci.sh
-        /workspace/scripts/test-api-ci.sh
-        
-        # Cleanup
-        kill $$APP_PID
-        echo "✅ API tests completed"
-
-# Store artifacts
+# =============================================================================
+# == Optional: Specify artifacts to store (e.g., JaCoCo reports)             ==
+# =============================================================================
 artifacts:
   objects:
-    location: 'gs://$PROJECT_ID-build-artifacts'
-    paths:
-      - 'build/libs/*.jar'
-      - 'build/reports/jacoco/test/jacocoTestReport.xml'
-
-# Build options
-options:
-  logging: CLOUD_LOGGING_ONLY
-  machineType: 'E2_HIGHCPU_8'
-
-# Substitution variables
-substitutions:
-  _IMAGE_NAME: 'store-app'
-  _REGION: 'us-central1'
-
-# Build timeout
-timeout: '1200s'  # 20 minutes
+    location: 'gs://${_BUCKET_NAME}/jacoco/$COMMIT_SHA/'
+    paths: ['build/reports/jacoco/test/html/**']
