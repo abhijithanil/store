@@ -39,7 +39,6 @@ steps:
       - '-c'
       - |
         gcloud secrets versions access latest --secret=MY_DOCKER_PASS --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/docker-password.txt
-        cat /workspace/docker-password.txt
     waitFor:
       - Build-Application
 
@@ -62,7 +61,6 @@ steps:
     waitFor:
       - Docker-Login
 
-  # --- MODIFIED STEP ---
   - name: 'gcr.io/cloud-builders/docker'
     id: Push-Docker-Image
     args:
@@ -75,3 +73,9 @@ artifacts:
   objects:
     location: 'gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/'
     paths: ['build/reports/jacoco/test/html/**']
+
+options:
+  logging: LEGACY
+  logsBucket: 'gs://inspire26_cloudbuild_artifacts/logs'
+
+serviceAccount: 'projects/inspire26/serviceAccounts/981472429384@cloudbuild.gserviceaccount.com'

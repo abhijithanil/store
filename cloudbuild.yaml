@@ -74,3 +74,9 @@ artifacts:
   objects:
     location: 'gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/'
     paths: ['build/reports/jacoco/test/html/**']
+
+options:
+  logging: LEGACY
+  logsBucket: 'gs://inspire26_cloudbuild_artifacts/logs'
+
+serviceAccount: 'projects/inspire26/serviceAccounts/981472429384@cloudbuild.gserviceaccount.com'
