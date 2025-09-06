@@ -76,6 +76,6 @@ artifacts:
 
 options:
   logging: LEGACY
-  logsBucket: 'gs://inspire26_cloudbuild_artifacts/logs'
+  log_gcs_bucket: 'gs://inspire26_cloudbuild_artifacts/logs'
 
 serviceAccount: 'projects/inspire26/serviceAccounts/981472429384@cloudbuild.gserviceaccount.com'
