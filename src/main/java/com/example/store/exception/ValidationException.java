@@ -1,9 +1,6 @@
 package com.example.store.exception;
 
-
-/**
- * Validation exception.
- */
+/** Validation exception. */
 public class ValidationException extends RuntimeException {
 
     /**
@@ -19,7 +16,7 @@ public class ValidationException extends RuntimeException {
      * Instantiates a new Validation exception.
      *
      * @param message the message
-     * @param cause   the cause
+     * @param cause the cause
      */
     public ValidationException(String message, Throwable cause) {
         super(message, cause);

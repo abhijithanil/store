@@ -2,9 +2,7 @@ package com.example.store.dto;
 
 import lombok.Data;
 
-/**
- * Order customer dto.
- */
+/** Order customer dto. */
 @Data
 public class OrderCustomerDTO {
     private Long id;

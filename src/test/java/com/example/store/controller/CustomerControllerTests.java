@@ -19,9 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * The type Customer controller tests.
- */
+/** The type Customer controller tests. */
 @WebMvcTest(CustomerController.class)
 @ComponentScan(basePackageClasses = CustomerMapper.class)
 class CustomerControllerTests {
@@ -38,9 +36,7 @@ class CustomerControllerTests {
     private Customer customer;
     private CustomerDTO customerDTO;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         customer = new Customer();

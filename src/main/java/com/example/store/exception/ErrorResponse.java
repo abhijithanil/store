@@ -6,10 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-
-/**
- * Error response.
- */
+/** Error response. */
 @Data
 @Builder
 public class ErrorResponse {

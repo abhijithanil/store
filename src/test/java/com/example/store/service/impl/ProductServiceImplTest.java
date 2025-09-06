@@ -24,10 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-
-/**
- * The type Product service impl test.
- */
+/** The type Product service impl test. */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ProductServiceImpl Tests")
 class ProductServiceImplTest {
@@ -47,9 +44,7 @@ class ProductServiceImplTest {
     private Product product;
     private ProductDTO productDTO;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         product = new Product();
@@ -62,9 +57,7 @@ class ProductServiceImplTest {
         productDTO.setOrderIds(Arrays.asList(1L, 2L));
     }
 
-    /**
-     * Should retrieve all products successfully.
-     */
+    /** Should retrieve all products successfully. */
     @Test
     @DisplayName("Should retrieve all products successfully")
     void shouldRetrieveAllProductsSuccessfully() {
@@ -85,9 +78,7 @@ class ProductServiceImplTest {
         verify(productMapper).productsToProductDTOs(products);
     }
 
-    /**
-     * Should create product successfully.
-     */
+    /** Should create product successfully. */
     @Test
     @DisplayName("Should create product successfully")
     void shouldCreateProductSuccessfully() {
@@ -118,9 +109,7 @@ class ProductServiceImplTest {
         verify(productMapper).productToProductDTO(savedProduct);
     }
 
-    /**
-     * Should throw validation exception when creating product with invalid description.
-     */
+    /** Should throw validation exception when creating product with invalid description. */
     @Test
     @DisplayName("Should throw ValidationException when creating product with invalid description")
     void shouldThrowValidationExceptionWhenCreatingProductWithInvalidDescription() {
@@ -140,10 +129,7 @@ class ProductServiceImplTest {
         verify(productRepository, never()).save(any());
     }
 
-
-    /**
-     * Should get product by id successfully.
-     */
+    /** Should get product by id successfully. */
     @Test
     @DisplayName("Should get product by ID successfully")
     void shouldGetProductByIdSuccessfully() {
@@ -164,9 +150,7 @@ class ProductServiceImplTest {
         verify(productMapper).productToProductDTO(product);
     }
 
-    /**
-     * Should throw product not found exception when product not found by id.
-     */
+    /** Should throw product not found exception when product not found by id. */
     @Test
     @DisplayName("Should throw ProductNotFoundException when product not found by ID")
     void shouldThrowProductNotFoundExceptionWhenProductNotFoundById() {
@@ -184,9 +168,7 @@ class ProductServiceImplTest {
         verify(productMapper, never()).productToProductDTO(any());
     }
 
-    /**
-     * Should update product successfully.
-     */
+    /** Should update product successfully. */
     @Test
     @DisplayName("Should update product successfully")
     void shouldUpdateProductSuccessfully() {
@@ -222,9 +204,7 @@ class ProductServiceImplTest {
         verify(productMapper).productToProductDTO(savedProduct);
     }
 
-    /**
-     * Should throw product not found exception when updating non existent product.
-     */
+    /** Should throw product not found exception when updating non existent product. */
     @Test
     @DisplayName("Should throw ProductNotFoundException when updating non-existent product")
     void shouldThrowProductNotFoundExceptionWhenUpdatingNonExistentProduct() {
@@ -247,10 +227,7 @@ class ProductServiceImplTest {
         verify(productRepository, never()).save(any());
     }
 
-
-    /**
-     * Should handle repository exception gracefully.
-     */
+    /** Should handle repository exception gracefully. */
     @Test
     @DisplayName("Should handle repository exception gracefully")
     void shouldHandleRepositoryExceptionGracefully() {

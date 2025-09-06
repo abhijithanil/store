@@ -11,9 +11,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Customer Entity.
- */
+/** Customer Entity. */
 @Entity
 @Data
 public class Customer {

@@ -6,10 +6,7 @@ import lombok.Data;
 
 import java.util.List;
 
-
-/**
- * Create order request.
- */
+/** Create order request. */
 @Data
 public class CreateOrderRequest {
 

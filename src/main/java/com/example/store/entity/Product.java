@@ -11,10 +11,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Product Entity.
- */
+/** Product Entity. */
 @Entity
 @Data
 public class Product {

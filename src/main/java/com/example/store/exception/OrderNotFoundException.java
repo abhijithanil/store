@@ -1,8 +1,6 @@
 package com.example.store.exception;
 
-/**
- * Order not found exception.
- */
+/** Order not found exception. */
 public class OrderNotFoundException extends RuntimeException {
 
     /**
@@ -18,7 +16,7 @@ public class OrderNotFoundException extends RuntimeException {
      * Instantiates a new Order not found exception.
      *
      * @param message the message
-     * @param cause   the cause
+     * @param cause the cause
      */
     public OrderNotFoundException(String message, Throwable cause) {
         super(message, cause);

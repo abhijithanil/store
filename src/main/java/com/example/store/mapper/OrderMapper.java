@@ -12,10 +12,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-
-/**
- * The interface Order mapper.
- */
+/** The interface Order mapper. */
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 

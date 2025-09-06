@@ -8,10 +8,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-
-/**
- * The interface Product mapper.
- */
+/** The interface Product mapper. */
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 

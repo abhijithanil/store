@@ -4,9 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * Customer dto.
- */
+/** Customer dto. */
 @Data
 public class CustomerDTO {
     private Long id;

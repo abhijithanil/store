@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-
-/**
- * The type Product service.
- */
+/** The type Product service. */
 @Service
 @RequiredArgsConstructor
 @Slf4j

@@ -16,9 +16,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The type Redis config.
- */
+/** The type Redis config. */
 @Configuration
 @EnableCaching
 @EnableTransactionManagement

@@ -10,9 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-/**
- * The interface Customer repository.
- */
+/** The interface Customer repository. */
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     /**
@@ -27,7 +25,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     /**
      * Find by name containing ignore case page.
      *
-     * @param query    the query
+     * @param query the query
      * @param pageable the pageable
      * @return the page
      */

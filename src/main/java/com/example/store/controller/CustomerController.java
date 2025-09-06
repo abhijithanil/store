@@ -19,9 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-/**
- * Customer controller.
- */
+/** Customer controller. */
 @RestController
 @RequestMapping("/customer")
 @RequiredArgsConstructor
@@ -33,9 +31,9 @@ public class CustomerController {
     /**
      * Gets all customers paged.
      *
-     * @param page      the page
-     * @param size      the size
-     * @param sortBy    the sort by
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
      * @param sortOrder the sort order
      * @return the all customers paged
      */
@@ -114,10 +112,10 @@ public class CustomerController {
     /**
      * Search customers com . example . store . dto . paged response.
      *
-     * @param query     the query
-     * @param page      the page
-     * @param size      the size
-     * @param sortBy    the sort by
+     * @param query the query
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
      * @param sortOrder the sort order
      * @return the com . example . store . dto . paged response
      */

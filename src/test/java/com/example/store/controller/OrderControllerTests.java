@@ -22,9 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * The type Order controller tests.
- */
+/** The type Order controller tests. */
 @WebMvcTest(OrderController.class)
 @ComponentScan(basePackageClasses = CustomerMapper.class)
 class OrderControllerTests {
@@ -42,9 +40,7 @@ class OrderControllerTests {
     private Customer customer;
     private OrderDTO orderDTO;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         customer = new Customer();
@@ -77,5 +73,4 @@ class OrderControllerTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Test Order"));
     }
-
 }

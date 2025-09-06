@@ -20,11 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.List;
-
-/**
- * Order controller.
- */
+/** Order controller. */
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
@@ -36,9 +32,9 @@ public class OrderController {
     /**
      * Gets all orders paged.
      *
-     * @param page      the page
-     * @param size      the size
-     * @param sortBy    the sort by
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
      * @param sortOrder the sort order
      * @return the all orders paged
      */

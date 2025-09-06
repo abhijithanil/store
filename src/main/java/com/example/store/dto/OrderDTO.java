@@ -4,10 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
-
-/**
- * Order dto.
- */
+/** Order dto. */
 @Data
 public class OrderDTO {
     private Long id;

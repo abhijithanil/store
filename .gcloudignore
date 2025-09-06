@@ -15,7 +15,6 @@
 # Build artifacts (will be generated during build)
 build/
 .gradle/
-gradle/
 
 # Logs
 *.log

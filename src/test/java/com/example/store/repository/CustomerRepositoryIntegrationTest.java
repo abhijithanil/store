@@ -14,9 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * The type Customer repository integration test.
- */
+/** The type Customer repository integration test. */
 @DataJpaTest
 @ActiveProfiles("test")
 @DisplayName("CustomerRepository Integration Tests")
@@ -32,9 +30,7 @@ class CustomerRepositoryIntegrationTest {
     private Customer customer2;
     private Customer customer3;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         // Clear the database before each test
@@ -57,9 +53,7 @@ class CustomerRepositoryIntegrationTest {
         entityManager.clear();
     }
 
-    /**
-     * Should find all customers.
-     */
+    /** Should find all customers. */
     @Test
     @DisplayName("Should find all customers")
     void shouldFindAllCustomers() {
@@ -74,9 +68,7 @@ class CustomerRepositoryIntegrationTest {
         assertTrue(customers.stream().anyMatch(c -> "Bob Johnson".equals(c.getName())));
     }
 
-    /**
-     * Should find customer by id.
-     */
+    /** Should find customer by id. */
     @Test
     @DisplayName("Should find customer by ID")
     void shouldFindCustomerById() {
@@ -89,9 +81,7 @@ class CustomerRepositoryIntegrationTest {
         assertEquals(customer1.getId(), customer.get().getId());
     }
 
-    /**
-     * Should return empty when customer not found by id.
-     */
+    /** Should return empty when customer not found by id. */
     @Test
     @DisplayName("Should return empty when customer not found by ID")
     void shouldReturnEmptyWhenCustomerNotFoundById() {
@@ -102,9 +92,7 @@ class CustomerRepositoryIntegrationTest {
         assertFalse(customer.isPresent());
     }
 
-    /**
-     * Should save new customer.
-     */
+    /** Should save new customer. */
     @Test
     @DisplayName("Should save new customer")
     void shouldSaveNewCustomer() {
@@ -125,9 +113,7 @@ class CustomerRepositoryIntegrationTest {
         assertEquals("Alice Brown", foundCustomer.get().getName());
     }
 
-    /**
-     * Should update existing customer.
-     */
+    /** Should update existing customer. */
     @Test
     @DisplayName("Should update existing customer")
     void shouldUpdateExistingCustomer() {
@@ -147,10 +133,7 @@ class CustomerRepositoryIntegrationTest {
         assertEquals("John Updated", foundCustomer.get().getName());
     }
 
-
-    /**
-     * Should check if customer exists by id.
-     */
+    /** Should check if customer exists by id. */
     @Test
     @DisplayName("Should check if customer exists by ID")
     void shouldCheckIfCustomerExistsById() {
@@ -161,9 +144,7 @@ class CustomerRepositoryIntegrationTest {
         assertFalse(customerRepository.existsById(999L));
     }
 
-    /**
-     * Should find customers by name containing substring case insensitive.
-     */
+    /** Should find customers by name containing substring case insensitive. */
     @Test
     @DisplayName("Should find customers by name containing substring - case insensitive")
     void shouldFindCustomersByNameContainingSubstringCaseInsensitive() {
@@ -187,9 +168,7 @@ class CustomerRepositoryIntegrationTest {
         assertTrue(nonExistentCustomers.isEmpty());
     }
 
-    /**
-     * Should find customers by name containing substring partial match.
-     */
+    /** Should find customers by name containing substring partial match. */
     @Test
     @DisplayName("Should find customers by name containing substring - partial match")
     void shouldFindCustomersByNameContainingSubstringPartialMatch() {
@@ -209,9 +188,7 @@ class CustomerRepositoryIntegrationTest {
         assertEquals("Bob Johnson", johnsonCustomers.get(0).getName());
     }
 
-    /**
-     * Should find customers by name containing substring case variations.
-     */
+    /** Should find customers by name containing substring case variations. */
     @Test
     @DisplayName("Should find customers by name containing substring - case variations")
     void shouldFindCustomersByNameContainingSubstringCaseVariations() {
@@ -230,9 +207,7 @@ class CustomerRepositoryIntegrationTest {
         assertTrue(upperCaseCustomers.stream().anyMatch(c -> "Bob Johnson".equals(c.getName())));
     }
 
-    /**
-     * Should handle empty search query gracefully.
-     */
+    /** Should handle empty search query gracefully. */
     @Test
     @DisplayName("Should handle empty search query gracefully")
     void shouldHandleEmptySearchQueryGracefully() {
@@ -246,9 +221,7 @@ class CustomerRepositoryIntegrationTest {
         assertEquals(0, whitespaceQueryCustomers.size()); // Whitespace should return 0 customers
     }
 
-    /**
-     * Should handle special characters in names.
-     */
+    /** Should handle special characters in names. */
     @Test
     @DisplayName("Should handle special characters in names")
     void shouldHandleSpecialCharactersInNames() {
@@ -275,9 +248,7 @@ class CustomerRepositoryIntegrationTest {
         assertEquals("O'Connor", apostropheCustomers.get(0).getName());
     }
 
-    /**
-     * Should count total customers.
-     */
+    /** Should count total customers. */
     @Test
     @DisplayName("Should count total customers")
     void shouldCountTotalCustomers() {
@@ -287,5 +258,4 @@ class CustomerRepositoryIntegrationTest {
         // Then
         assertEquals(3, count);
     }
-
 }

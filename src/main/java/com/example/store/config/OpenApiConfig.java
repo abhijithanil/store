@@ -11,10 +11,7 @@ import io.swagger.v3.oas.models.servers.Server;
 
 import java.util.List;
 
-
-/**
- * The type Open api config.
- */
+/** The type Open api config. */
 @Configuration
 public class OpenApiConfig {
 

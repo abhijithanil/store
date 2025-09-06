@@ -19,12 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.List;
-
-
-/**
- * Product controller.
- */
+/** Product controller. */
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -36,12 +31,13 @@ public class ProductController {
     /**
      * Gets all products paged.
      *
-     * @param page      the page
-     * @param size      the size
-     * @param sortBy    the sort by
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
      * @param sortOrder the sort order
      * @return the all products paged
      */
+    @GetMapping("")
     @Operation(
             summary = "Get all products with pagination",
             description = "Retrieve a paginated list of all products with their associated order IDs")
@@ -115,14 +111,13 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-
     /**
      * Search products paged com . example . store . dto . paged response.
      *
-     * @param query     the query
-     * @param page      the page
-     * @param size      the size
-     * @param sortBy    the sort by
+     * @param query the query
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
      * @param sortOrder the sort order
      * @return the com . example . store . dto . paged response
      */

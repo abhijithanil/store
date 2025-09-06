@@ -15,9 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * The type Product repository integration test.
- */
+/** The type Product repository integration test. */
 @DataJpaTest
 @ActiveProfiles("test")
 @DisplayName("ProductRepository Integration Tests")
@@ -33,9 +31,7 @@ class ProductRepositoryIntegrationTest {
     private Product product2;
     private Product product3;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         // Clear the database before each test
@@ -58,9 +54,7 @@ class ProductRepositoryIntegrationTest {
         entityManager.clear();
     }
 
-    /**
-     * Should find all products.
-     */
+    /** Should find all products. */
     @Test
     @DisplayName("Should find all products")
     void shouldFindAllProducts() {
@@ -75,9 +69,7 @@ class ProductRepositoryIntegrationTest {
         assertTrue(products.stream().anyMatch(p -> "Tablet Computer".equals(p.getDescription())));
     }
 
-    /**
-     * Should find product by id.
-     */
+    /** Should find product by id. */
     @Test
     @DisplayName("Should find product by ID")
     void shouldFindProductById() {
@@ -90,9 +82,7 @@ class ProductRepositoryIntegrationTest {
         assertEquals(product1.getId(), product.get().getId());
     }
 
-    /**
-     * Should return empty when product not found by id.
-     */
+    /** Should return empty when product not found by id. */
     @Test
     @DisplayName("Should return empty when product not found by ID")
     void shouldReturnEmptyWhenProductNotFoundById() {
@@ -103,9 +93,7 @@ class ProductRepositoryIntegrationTest {
         assertFalse(product.isPresent());
     }
 
-    /**
-     * Should save new product.
-     */
+    /** Should save new product. */
     @Test
     @DisplayName("Should save new product")
     void shouldSaveNewProduct() {
@@ -126,9 +114,7 @@ class ProductRepositoryIntegrationTest {
         assertEquals("Desktop Computer", foundProduct.get().getDescription());
     }
 
-    /**
-     * Should update existing product.
-     */
+    /** Should update existing product. */
     @Test
     @DisplayName("Should update existing product")
     void shouldUpdateExistingProduct() {
@@ -148,10 +134,7 @@ class ProductRepositoryIntegrationTest {
         assertEquals("Updated Laptop", foundProduct.get().getDescription());
     }
 
-
-    /**
-     * Should check if product exists by id.
-     */
+    /** Should check if product exists by id. */
     @Test
     @DisplayName("Should check if product exists by ID")
     void shouldCheckIfProductExistsById() {
@@ -162,9 +145,7 @@ class ProductRepositoryIntegrationTest {
         assertFalse(productRepository.existsById(999L));
     }
 
-    /**
-     * Should find products by description containing substring case insensitive.
-     */
+    /** Should find products by description containing substring case insensitive. */
     @Test
     @DisplayName("Should find products by description containing substring - case insensitive")
     void shouldFindProductsByDescriptionContainingSubstringCaseInsensitive() {
@@ -188,9 +169,7 @@ class ProductRepositoryIntegrationTest {
         assertTrue(nonExistentProducts.isEmpty());
     }
 
-    /**
-     * Should find products by description containing substring partial match.
-     */
+    /** Should find products by description containing substring partial match. */
     @Test
     @DisplayName("Should find products by description containing substring - partial match")
     void shouldFindProductsByDescriptionContainingSubstringPartialMatch() {
@@ -210,9 +189,7 @@ class ProductRepositoryIntegrationTest {
         assertEquals("Tablet Computer", tabletProducts.get(0).getDescription());
     }
 
-    /**
-     * Should find products by description containing substring case variations.
-     */
+    /** Should find products by description containing substring case variations. */
     @Test
     @DisplayName("Should find products by description containing substring - case variations")
     void shouldFindProductsByDescriptionContainingSubstringCaseVariations() {
@@ -231,9 +208,7 @@ class ProductRepositoryIntegrationTest {
         assertTrue(upperCaseProducts.stream().anyMatch(p -> "Tablet Computer".equals(p.getDescription())));
     }
 
-    /**
-     * Should handle empty search query gracefully.
-     */
+    /** Should handle empty search query gracefully. */
     @Test
     @DisplayName("Should handle empty search query gracefully")
     void shouldHandleEmptySearchQueryGracefully() {
@@ -247,9 +222,7 @@ class ProductRepositoryIntegrationTest {
         assertEquals(0, whitespaceQueryProducts.size()); // Whitespace should return 0 products
     }
 
-    /**
-     * Should find products with orders.
-     */
+    /** Should find products with orders. */
     @Test
     @DisplayName("Should find products with orders")
     void shouldFindProductsWithOrders() {
@@ -270,9 +243,7 @@ class ProductRepositoryIntegrationTest {
         assertTrue(productsWithOrders.stream().anyMatch(p -> "Smartphone Device".equals(p.getDescription())));
     }
 
-    /**
-     * Should find products without orders.
-     */
+    /** Should find products without orders. */
     @Test
     @DisplayName("Should find products without orders")
     void shouldFindProductsWithoutOrders() {
@@ -292,9 +263,7 @@ class ProductRepositoryIntegrationTest {
         assertTrue(productsWithoutOrders.stream().anyMatch(p -> "Tablet Computer".equals(p.getDescription())));
     }
 
-    /**
-     * Should count total products.
-     */
+    /** Should count total products. */
     @Test
     @DisplayName("Should count total products")
     void shouldCountTotalProducts() {
@@ -304,5 +273,4 @@ class ProductRepositoryIntegrationTest {
         // Then
         assertEquals(3, count);
     }
-
 }

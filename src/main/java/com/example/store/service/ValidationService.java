@@ -5,10 +5,7 @@ import com.example.store.exception.ValidationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-
-/**
- * The type Validation service.
- */
+/** The type Validation service. */
 @Service
 public class ValidationService {
 

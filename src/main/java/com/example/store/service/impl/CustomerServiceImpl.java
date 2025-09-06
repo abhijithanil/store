@@ -24,10 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-
-/**
- * The type Customer service.
- */
+/** The type Customer service. */
 @Service
 @RequiredArgsConstructor
 @Slf4j

@@ -4,10 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
-
-/**
- * Product dto.
- */
+/** Product dto. */
 @Data
 public class ProductDTO {
     private Long id;

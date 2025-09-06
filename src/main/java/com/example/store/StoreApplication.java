@@ -3,9 +3,7 @@ package com.example.store;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * The type Store application.
- */
+/** The type Store application. */
 @SpringBootApplication
 public class StoreApplication {
 

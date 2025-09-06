@@ -9,10 +9,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Order Entity.
- */
+/** Order Entity. */
 @Entity
 @Data
 @Table(name = "\"order\"")

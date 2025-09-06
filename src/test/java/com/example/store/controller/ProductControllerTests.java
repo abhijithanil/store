@@ -21,9 +21,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * The type Product controller tests.
- */
+/** The type Product controller tests. */
 @WebMvcTest(ProductController.class)
 @ComponentScan(basePackageClasses = ProductMapper.class)
 class ProductControllerTests {
@@ -40,9 +38,7 @@ class ProductControllerTests {
     private Product product;
     private ProductDTO productDTO;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         product = new Product();
@@ -70,7 +66,6 @@ class ProductControllerTests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("Laptop Computer"));
     }
-
 
     /**
      * Test get product by id.

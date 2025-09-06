@@ -7,16 +7,14 @@ import com.example.store.dto.PagedResponse;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * The interface Order service.
- */
+/** The interface Order service. */
 public interface OrderService {
     /**
      * Retrieves all orders with pagination support.
      *
-     * @param page      the page number (0-based)
-     * @param size      the page size
-     * @param sortBy    the field to sort by
+     * @param page the page number (0-based)
+     * @param size the page size
+     * @param sortBy the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of orders
      */

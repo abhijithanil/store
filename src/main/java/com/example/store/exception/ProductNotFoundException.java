@@ -1,8 +1,6 @@
 package com.example.store.exception;
 
-/**
- * Product not found exception.
- */
+/** Product not found exception. */
 public class ProductNotFoundException extends RuntimeException {
 
     /**
@@ -18,7 +16,7 @@ public class ProductNotFoundException extends RuntimeException {
      * Instantiates a new Product not found exception.
      *
      * @param message the message
-     * @param cause   the cause
+     * @param cause the cause
      */
     public ProductNotFoundException(String message, Throwable cause) {
         super(message, cause);

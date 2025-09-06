@@ -22,10 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-
-/**
- * The type Customer service impl test.
- */
+/** The type Customer service impl test. */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CustomerServiceImpl Tests")
 class CustomerServiceImplTest {
@@ -45,9 +42,7 @@ class CustomerServiceImplTest {
     private Customer customer;
     private CustomerDTO customerDTO;
 
-    /**
-     * Sets up.
-     */
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         customer = new Customer();
@@ -59,9 +54,7 @@ class CustomerServiceImplTest {
         customerDTO.setName("John Doe");
     }
 
-    /**
-     * Should create customer successfully.
-     */
+    /** Should create customer successfully. */
     @Test
     @DisplayName("Should create customer successfully")
     void shouldCreateCustomerSuccessfully() {
@@ -92,9 +85,7 @@ class CustomerServiceImplTest {
         verify(customerMapper).customerToCustomerDTO(savedCustomer);
     }
 
-    /**
-     * Should throw validation exception when creating customer with invalid name.
-     */
+    /** Should throw validation exception when creating customer with invalid name. */
     @Test
     @DisplayName("Should throw ValidationException when creating customer with invalid name")
     void shouldThrowValidationExceptionWhenCreatingCustomerWithInvalidName() {
@@ -114,9 +105,7 @@ class CustomerServiceImplTest {
         verify(customerRepository, never()).save(any());
     }
 
-    /**
-     * Should get customer by id successfully.
-     */
+    /** Should get customer by id successfully. */
     @Test
     @DisplayName("Should get customer by ID successfully")
     void shouldGetCustomerByIdSuccessfully() {
@@ -137,9 +126,7 @@ class CustomerServiceImplTest {
         verify(customerMapper).customerToCustomerDTO(customer);
     }
 
-    /**
-     * Should throw customer not found exception when customer not found by id.
-     */
+    /** Should throw customer not found exception when customer not found by id. */
     @Test
     @DisplayName("Should throw CustomerNotFoundException when customer not found by ID")
     void shouldThrowCustomerNotFoundExceptionWhenCustomerNotFoundById() {

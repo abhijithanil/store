@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 /**
  * Paged response.
  *
@@ -31,9 +30,9 @@ public class PagedResponse<T> {
     /**
      * Creates a PagedResponse from Spring Data Page object.
      *
-     * @param <T>       the type parameter
-     * @param page      the Spring Data Page object
-     * @param sortBy    the sort field
+     * @param <T> the type parameter
+     * @param page the Spring Data Page object
+     * @param sortBy the sort field
      * @param sortOrder the sort direction
      * @return PagedResponse with pagination metadata
      */
