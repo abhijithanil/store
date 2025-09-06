@@ -1,5 +1,6 @@
 substitutions:
   _BUCKET_NAME: 'inspire26_cloudbuild_artifacts'
+  _BADGE_BUCKET: 'inspire26-build-badges'
 
 steps:
   - name: 'ubuntu'
@@ -24,24 +25,115 @@ steps:
     waitFor:
       - Format-Code
 
+  # Create Coverage Badge after tests
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: Create-Coverage-Badge
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Extract coverage percentage from JaCoCo XML report
+        if [ -f "build/reports/jacoco/test/jacocoTestReport.xml" ]; then
+          # Parse coverage from XML - get instruction coverage (most common metric)
+          MISSED=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'missed="[0-9]*"' | cut -d'"' -f2)
+          COVERED=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'covered="[0-9]*"' | cut -d'"' -f2)
+        
+          if [ ! -z "$MISSED" ] && [ ! -z "$COVERED" ] && [ "$MISSED" != "0" -o "$COVERED" != "0" ]; then
+            TOTAL=$((MISSED + COVERED))
+            PERCENTAGE=$(((COVERED * 100) / TOTAL))
+            echo "Coverage: $PERCENTAGE% ($COVERED/$TOTAL instructions)"
+        
+            # Determine badge color
+            if [ $PERCENTAGE -ge 80 ]; then
+              COLOR="4c1"     # green
+            elif [ $PERCENTAGE -ge 60 ]; then
+              COLOR="dfb317"  # yellow
+            elif [ $PERCENTAGE -ge 40 ]; then
+              COLOR="fe7d37"  # orange
+            else
+              COLOR="e05d44"  # red
+            fi
+        
+            # Create coverage badge SVG
+            cat > /workspace/coverage.svg << EOF
+        <svg xmlns="http://www.w3.org/2000/svg" width="104" height="20">
+          <linearGradient id="b" x2="0" y2="100%">
+            <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+            <stop offset="1" stop-opacity=".1"/>
+          </linearGradient>
+          <clipPath id="a">
+            <rect width="104" height="20" rx="3" fill="#fff"/>
+          </clipPath>
+          <g clip-path="url(#a)">
+            <path fill="#555" d="M0 0h63v20H0z"/>
+            <path fill="#${COLOR}" d="M63 0h41v20H63z"/>
+            <path fill="url(#b)" d="M0 0h104v20H0z"/>
+          </g>
+          <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110">
+            <text x="325" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="530">coverage</text>
+            <text x="325" y="140" transform="scale(.1)" textLength="530">coverage</text>
+            <text x="835" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="310">${PERCENTAGE}%</text>
+            <text x="835" y="140" transform="scale(.1)" textLength="310">${PERCENTAGE}%</text>
+          </g>
+        </svg>
+        EOF
+        
+            # Upload coverage badge
+            gsutil -m cp /workspace/coverage.svg gs://${_BADGE_BUCKET}/coverage/coverage.svg
+            gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/coverage/coverage.svg || true
+            echo "📊 Coverage badge created: $PERCENTAGE%"
+          else
+            echo "⚠️ No coverage data found in XML report"
+          fi
+        else
+          echo "⚠️ JaCoCo XML report not found at build/reports/jacoco/test/jacocoTestReport.xml"
+          ls -la build/reports/jacoco/test/ || echo "Directory doesn't exist"
+        fi
+    waitFor:
+      - Run-Tests
+
   - name: 'gradle:8.5-jdk17-alpine'
     id: Build-Application
     entrypoint: './gradlew'
     args: ['build', '-x', 'test', '--no-daemon']
     dir: '.'
     waitFor:
-      - Run-Tests
+      - Create-Coverage-Badge
+
+  # Make JaCoCo reports publicly accessible
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: Make-Reports-Public
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Wait a moment for artifacts to be uploaded
+        sleep 2
+        
+        # Make JaCoCo reports publicly readable
+        echo "Making JaCoCo reports public..."
+        gsutil -m acl ch -r -u AllUsers:R gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/ || true
+        
+        # Create a latest copy for easy access
+        echo "Creating latest report copy..."
+        gsutil -m cp -r gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/* gs://${_BUCKET_NAME}/jacoco/latest/ || true
+        gsutil -m acl ch -r -u AllUsers:R gs://${_BUCKET_NAME}/jacoco/latest/ || true
+        
+        echo "📊 JaCoCo reports available at:"
+        echo "https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$BUILD_ID/index.html"
+        echo "https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/latest/index.html"
+    waitFor:
+      - Build-Application
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: Get-Docker-Password
     entrypoint: 'bash'
     args:
-        - '-c'
-        - |
-          gcloud secrets versions access latest --secret=MY_DOCKER_PASS --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/docker-password.txt
-          cat /workspace/docker-password.txt
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=MY_DOCKER_PASS --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/docker-password.txt
     waitFor:
-        - Build-Application
+      - Make-Reports-Public
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Docker-Login
@@ -55,20 +147,106 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: Build-Docker-Image
     args:
-        - 'build'
-        - '-t'
-        - 'aa061872/store-app:latest'
-        - '.'
+      - 'build'
+      - '-t'
+      - 'aa061872/store-app:$SHORT_SHA'
+      - '.'
     waitFor:
-        - Docker-Login
+      - Docker-Login
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Push-Docker-Image
     args:
       - 'push'
-      - 'aa061872/store-app:latest'
+      - 'aa061872/store-app:$SHORT_SHA'
     waitFor:
       - Build-Docker-Image
+
+  # Create SUCCESS badge - only runs if all previous steps succeed
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: Create-Success-Badge
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Create success badge SVG
+        cat > /workspace/status.svg << 'EOF'
+        <svg xmlns="http://www.w3.org/2000/svg" width="104" height="20">
+          <linearGradient id="b" x2="0" y2="100%">
+            <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+            <stop offset="1" stop-opacity=".1"/>
+          </linearGradient>
+          <clipPath id="a">
+            <rect width="104" height="20" rx="3" fill="#fff"/>
+          </clipPath>
+          <g clip-path="url(#a)">
+            <path fill="#555" d="M0 0h37v20H0z"/>
+            <path fill="#4c1" d="M37 0h67v20H37z"/>
+            <path fill="url(#b)" d="M0 0h104v20H0z"/>
+          </g>
+          <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110">
+            <text x="195" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="270">build</text>
+            <text x="195" y="140" transform="scale(.1)" textLength="270">build</text>
+            <text x="695" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="570">passing</text>
+            <text x="695" y="140" transform="scale(.1)" textLength="570">passing</text>
+          </g>
+        </svg>
+        EOF
+        
+        # Upload success badge
+        gsutil -m cp /workspace/status.svg gs://${_BADGE_BUCKET}/builds/${BRANCH_NAME}/status.svg
+        gsutil -m cp /workspace/status.svg gs://${_BADGE_BUCKET}/builds/main/status.svg
+        
+        # Make publicly readable
+        gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/${BRANCH_NAME}/status.svg || true
+        gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/main/status.svg || true
+        
+        echo "✅ Success badge created and uploaded"
+    waitFor:
+      - Push-Docker-Image
+
+  # Create FAILURE badge - runs on any step failure
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: Create-Failure-Badge
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Create failure badge SVG
+        cat > /workspace/status.svg << 'EOF'
+        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="20">
+          <linearGradient id="b" x2="0" y2="100%">
+            <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+            <stop offset="1" stop-opacity=".1"/>
+          </linearGradient>
+          <clipPath id="a">
+            <rect width="90" height="20" rx="3" fill="#fff"/>
+          </clipPath>
+          <g clip-path="url(#a)">
+            <path fill="#555" d="M0 0h37v20H0z"/>
+            <path fill="#e05d44" d="M37 0h53v20H37z"/>
+            <path fill="url(#b)" d="M0 0h90v20H0z"/>
+          </g>
+          <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110">
+            <text x="195" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="270">build</text>
+            <text x="195" y="140" transform="scale(.1)" textLength="270">build</text>
+            <text x="635" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="430">failing</text>
+            <text x="635" y="140" transform="scale(.1)" textLength="430">failing</text>
+          </g>
+        </svg>
+        EOF
+        
+        # Upload failure badge
+        gsutil -m cp /workspace/status.svg gs://${_BADGE_BUCKET}/builds/${BRANCH_NAME}/status.svg
+        gsutil -m cp /workspace/status.svg gs://${_BADGE_BUCKET}/builds/main/status.svg
+        
+        # Make publicly readable
+        gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/${BRANCH_NAME}/status.svg || true
+        gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/main/status.svg || true
+        
+        echo "❌ Failure badge created and uploaded"
+    allowFailure: true
+    waitFor: ['-']
 
 artifacts:
   objects:
