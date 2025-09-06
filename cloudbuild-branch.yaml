@@ -75,7 +75,6 @@ artifacts:
     paths: ['build/reports/jacoco/test/html/**']
 
 options:
-  logging: LEGACY
-  log_gcs_bucket: 'gs://inspire26_cloudbuild_artifacts/logs'
+  logging: CLOUD_LOGGING_ONLY
 
 serviceAccount: 'projects/inspire26/serviceAccounts/981472429384@cloudbuild.gserviceaccount.com'
