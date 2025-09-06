@@ -21,7 +21,7 @@ env:
 
 jobs:
   check-commit-message:
-    name: Check Commit Message
+    name: Check CI Trigger Conditions
     runs-on: ubuntu-latest
     outputs:
       should-run: ${{ steps.check.outputs.should-run }}
@@ -31,15 +31,24 @@ jobs:
       with:
         fetch-depth: 0
     
-    - name: Check if commit message contains 'run-ci'
+    - name: Check CI trigger conditions (PR, run-ci, or manual)
       id: check
       run: |
-        if [[ "${{ github.event.head_commit.message }}" == *"run-ci"* ]] || [[ "${{ github.event.inputs.force_run }}" == "true" ]]; then
+        # Always run for pull requests to main branch
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           echo "should-run=true" >> $GITHUB_OUTPUT
-          echo "✅ Commit message contains 'run-ci' or manual trigger - CI will run"
+          echo "✅ Pull request detected - CI will run"
+        # Run for commits with 'run-ci' in message
+        elif [[ "${{ github.event.head_commit.message }}" == *"run-ci"* ]]; then
+          echo "should-run=true" >> $GITHUB_OUTPUT
+          echo "✅ Commit message contains 'run-ci' - CI will run"
+        # Run for manual workflow dispatch
+        elif [[ "${{ github.event.inputs.force_run }}" == "true" ]]; then
+          echo "should-run=true" >> $GITHUB_OUTPUT
+          echo "✅ Manual trigger - CI will run"
         else
           echo "should-run=false" >> $GITHUB_OUTPUT
-          echo "❌ Commit message does not contain 'run-ci' - CI will be skipped"
+          echo "❌ Commit message does not contain 'run-ci' and not a PR - CI will be skipped"
         fi
 
   test:
