@@ -258,7 +258,7 @@ steps:
 
 artifacts:
   objects:
-    location: 'gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/'
+    location: 'gs://${_BUCKET_NAME}/jacoco/latest/'
     paths: ['build/reports/jacoco/test/html/**']
 
 options:
