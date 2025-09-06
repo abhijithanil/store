@@ -1,6 +1,18 @@
 # Store Application
 The Store application keeps track of customers and orders in a database.
 
+## CI/CD Pipeline
+This project uses **Google Cloud Build** for continuous integration and deployment. See [GCLOUD-BUILD-SETUP.md](GCLOUD-BUILD-SETUP.md) for detailed setup instructions.
+
+### Quick Start with Google Cloud Build
+```bash
+# Run the setup script
+./setup-gcloud-build.sh
+
+# Manual build
+gcloud builds submit --config=cloudbuild.yaml .
+```
+
 # Assumptions
 This README assumes you're using a posix environment. It's possible to run this on Windows as well:
 * Instead of `./gradlew` use `gradlew.bat`
