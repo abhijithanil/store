@@ -39,7 +39,7 @@ jobs:
             echo "should-run=true" >> $GITHUB_OUTPUT
             echo "✅ Pull request detected - CI will run"
           # Run for commits with 'run-ci' in message
-          elif git log --format=%B -n 1 ${{ github.sha }} | grep -q "run-ci"; then
+          elif git log -1 --pretty=%B | grep -q "run-ci"; then
             echo "should-run=true" >> $GITHUB_OUTPUT
             echo "✅ Commit message contains 'run-ci' - CI will run"
           # Run for manual workflow dispatch
