@@ -41,14 +41,14 @@ steps:
           if [ ! -z "$$MISSED" ] && [ ! -z "$$COVERED" ] && [ "$$MISSED" != "0" -o "$$COVERED" != "0" ]; then
             TOTAL=$((MISSED + COVERED))
             PERCENTAGE=$(((COVERED * 100) / TOTAL))
-            echo "Coverage: $PERCENTAGE% ($$COVERED/$TOTAL instructions)"
+            echo "Coverage: $$PERCENTAGE% ($$COVERED/$$TOTAL instructions)"
         
             # Determine badge color
-            if [ $PERCENTAGE -ge 80 ]; then
+            if [ $$PERCENTAGE -ge 80 ]; then
               COLOR="4c1"     # green
-            elif [ $PERCENTAGE -ge 60 ]; then
+            elif [ $$PERCENTAGE -ge 60 ]; then
               COLOR="dfb317"  # yellow
-            elif [ $PERCENTAGE -ge 40 ]; then
+            elif [ $$PERCENTAGE -ge 40 ]; then
               COLOR="fe7d37"  # orange
             else
               COLOR="e05d44"  # red
@@ -81,12 +81,12 @@ steps:
             # Upload coverage badge
             gsutil -m cp /workspace/coverage.svg gs://${_BADGE_BUCKET}/coverage/coverage.svg
             gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/coverage/coverage.svg || true
-            echo "📊 Coverage badge created: $PERCENTAGE%"
+            echo "Coverage badge created: $$PERCENTAGE%"
           else
-            echo "⚠️ No coverage data found in XML report"
+            echo "! No coverage data found in XML report"
           fi
         else
-          echo "⚠️ JaCoCo XML report not found at build/reports/jacoco/test/jacocoTestReport.xml"
+          echo "! JaCoCo XML report not found at build/reports/jacoco/test/jacocoTestReport.xml"
           ls -la build/reports/jacoco/test/ || echo "Directory doesn't exist"
         fi
     waitFor:
@@ -119,7 +119,7 @@ steps:
         gsutil -m cp -r gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/* gs://${_BUCKET_NAME}/jacoco/latest/ || true
         gsutil -m acl ch -r -u AllUsers:R gs://${_BUCKET_NAME}/jacoco/latest/ || true
         
-        echo "📊 JaCoCo reports available at:"
+        echo "JaCoCo reports available at:"
         echo "https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$BUILD_ID/index.html"
         echo "https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/latest/index.html"
     waitFor:
