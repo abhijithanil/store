@@ -2,7 +2,7 @@
 
 This document provides comprehensive instructions for setting up the CI/CD pipeline for the Store application using GitHub Actions.
 
-## 🚀 Overview
+## Overview
 
 The CI/CD pipeline includes:
 - **Automated Testing** with JaCoCo code coverage reporting
@@ -11,7 +11,7 @@ The CI/CD pipeline includes:
 - **Artifact Management** with GitHub Actions artifacts
 - **Environment Protection** with required reviewers
 
-## 📋 Prerequisites
+## Prerequisites
 
 ### GitHub Environment Setup
 
@@ -39,7 +39,7 @@ The CI/CD pipeline includes:
    - Create a new token with "Read, Write, Delete" permissions
    - Use this token as `DOCKERHUB_PASS` in GitHub secrets
 
-## 🔧 Pipeline Configuration
+## Pipeline Configuration
 
 ### Workflow Triggers
 
@@ -85,7 +85,7 @@ The pipeline runs on:
   - Run Trivy vulnerability scanner
   - Upload results to GitHub Security tab
 
-## 🐳 Docker Configuration
+## Docker Configuration
 
 ### Multi-Stage Build
 
@@ -110,7 +110,7 @@ The pipeline creates multiple tags:
 - `main-<commit-sha>` (commit-specific)
 - `develop-<commit-sha>` (commit-specific)
 
-## 📊 Code Coverage
+## Code Coverage
 
 ### JaCoCo Configuration
 
@@ -126,7 +126,7 @@ Reports are available as:
 - **Codecov Integration**: Online coverage tracking
 - **Build Verification**: Pipeline fails if coverage < 70%
 
-## 🔒 Security Features
+## Security Features
 
 ### Vulnerability Scanning
 
@@ -140,7 +140,7 @@ Reports are available as:
 - **Wait Timer**: Prevents immediate deployments
 - **Branch Restrictions**: Control which branches can deploy
 
-## 🚀 Local Development
+## Local Development
 
 ### Running with Docker Compose
 
@@ -170,40 +170,12 @@ docker-compose down
 - Database: PostgreSQL health check
 - Cache: Redis ping check
 
-## 📈 Monitoring and Observability
-
-### Actuator Endpoints
-
-- `/actuator/health` - Application health status
-- `/actuator/info` - Application information
-- `/actuator/metrics` - Application metrics
-
 ### Docker Health Checks
 
 - **Interval**: 30 seconds
 - **Timeout**: 3 seconds
 - **Retries**: 3 attempts
 - **Start Period**: 5 seconds
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **Docker Login Fails**:
-   - Verify DockerHub credentials in GitHub secrets
-   - Check if access token has correct permissions
-
-2. **Coverage Below Threshold**:
-   - Review JaCoCo exclusions in `build.gradle`
-   - Add more tests to increase coverage
-
-3. **Environment Protection Blocks Deployment**:
-   - Ensure required reviewers approve the deployment
-   - Check if wait timer has expired
-
-4. **Security Scan Fails**:
-   - Review Trivy scan results in GitHub Security tab
-   - Update base images if vulnerabilities found
 
 ### Debug Commands
 
@@ -218,19 +190,3 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 # Check application health
 curl http://localhost:8080/actuator/health
 ```
-
-## 📚 Additional Resources
-
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Docker Multi-Architecture Builds](https://docs.docker.com/buildx/working-with-buildx/)
-- [JaCoCo Gradle Plugin](https://docs.gradle.org/current/userguide/jacoco_plugin.html)
-- [Trivy Security Scanner](https://trivy.dev/)
-- [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html)
-
-## 🎯 Next Steps
-
-1. **Set up monitoring**: Integrate with monitoring solutions (Prometheus, Grafana)
-2. **Add more environments**: Create staging and production environments
-3. **Implement blue-green deployments**: Add advanced deployment strategies
-4. **Add performance testing**: Integrate load testing in the pipeline
-5. **Set up notifications**: Configure Slack/email notifications for pipeline events
