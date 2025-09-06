@@ -13,3 +13,22 @@ spring:
         default_batch_fetch_size: 10
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+# Swagger UI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    filter: true
+    displayRequestDuration: true
+    displayOperationId: false
+    defaultModelsExpandDepth: 1
+    defaultModelExpandDepth: 1
+    docExpansion: none
+    showExtensions: true
+    showCommonExtensions: true
