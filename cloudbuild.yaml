@@ -149,7 +149,7 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'aa061872/store-app:$SHORT_SHA'
+      - 'aa061872/store-app:latest'
       - '.'
     waitFor:
       - Docker-Login
@@ -158,7 +158,7 @@ steps:
     id: Push-Docker-Image
     args:
       - 'push'
-      - 'aa061872/store-app:$SHORT_SHA'
+      - 'aa061872/store-app:latest'
     waitFor:
       - Build-Docker-Image
 
@@ -244,7 +244,7 @@ steps:
         gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/${BRANCH_NAME}/status.svg || true
         gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/main/status.svg || true
         
-        echo "❌ Failure badge created and uploaded"
+        echo "Failure badge created and uploaded"
     allowFailure: true
     waitFor: ['-']
 
