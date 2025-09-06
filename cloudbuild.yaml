@@ -38,10 +38,10 @@ steps:
           MISSED=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'missed="[0-9]*"' | cut -d'"' -f2)
           COVERED=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'covered="[0-9]*"' | cut -d'"' -f2)
         
-          if [ ! -z "$MISSED" ] && [ ! -z "$COVERED" ] && [ "$MISSED" != "0" -o "$COVERED" != "0" ]; then
+          if [ ! -z "$$MISSED" ] && [ ! -z "$$COVERED" ] && [ "$$MISSED" != "0" -o "$$COVERED" != "0" ]; then
             TOTAL=$((MISSED + COVERED))
             PERCENTAGE=$(((COVERED * 100) / TOTAL))
-            echo "Coverage: $PERCENTAGE% ($COVERED/$TOTAL instructions)"
+            echo "Coverage: $PERCENTAGE% ($$COVERED/$TOTAL instructions)"
         
             # Determine badge color
             if [ $PERCENTAGE -ge 80 ]; then
