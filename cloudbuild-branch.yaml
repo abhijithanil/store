@@ -36,12 +36,12 @@ steps:
     id: Get-Docker-Password
     entrypoint: 'bash'
     args:
-        - '-c'
-        - |
-          gcloud secrets versions access latest --secret=MY_DOCKER_PASS --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/docker-password.txt
-          cat /workspace/docker-password.txt
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=MY_DOCKER_PASS --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/docker-password.txt
+        cat /workspace/docker-password.txt
     waitFor:
-        - Build-Application
+      - Build-Application
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Docker-Login
@@ -55,18 +55,19 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: Build-Docker-Image
     args:
-        - 'build'
-        - '-t'
-        - 'aa061872/store-app:latest'
-        - '.'
+      - 'build'
+      - '-t'
+      - 'aa061872/store-app:$SHORT_SHA'
+      - '.'
     waitFor:
-        - Docker-Login
+      - Docker-Login
 
+  # --- MODIFIED STEP ---
   - name: 'gcr.io/cloud-builders/docker'
     id: Push-Docker-Image
     args:
       - 'push'
-      - 'aa061872/store-app:latest'
+      - 'aa061872/store-app:$SHORT_SHA'
     waitFor:
       - Build-Docker-Image
 

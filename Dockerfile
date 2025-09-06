@@ -30,8 +30,8 @@ RUN addgroup -g 1001 appuser && adduser -D -u 1001 -G appuser appuser
 # Set working directory
 WORKDIR /app
 
-# Copy the built JAR from builder stage
-COPY --from=builder /app/build/libs/*.jar app.jar
+# Correctly copy the specific JAR file
+COPY --from=builder /app/build/libs/store-1.0.0-SNAPSHOT.jar app.jar
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app

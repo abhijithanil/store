@@ -24,7 +24,7 @@ services:
       start_period: 40s
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     environment:
       - POSTGRES_DB=store
       - POSTGRES_USER=admin
