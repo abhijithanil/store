@@ -1,6 +1,20 @@
 # Store Application
 The Store application keeps track of customers and orders in a database.
 
+# Store Application
+
+[![Build Status](https://storage.googleapis.com/inspire26-build-badges/builds/main/status.svg)](https://console.cloud.google.com/cloud-build/builds?project=inspire26)
+  [![Coverage](https://storage.googleapis.com/inspire26-build-badges/coverage/coverage.svg)](https://storage.googleapis.com/inspire26_cloudbuild_artifacts/jacoco/latest/index.html)
+  [![Docker](https://img.shields.io/badge/docker-aa061872%2Fstore--app-blue?logo=docker&logoColor=white)](https://hub.docker.com/r/aa061872/store-app)
+  
+  ## 📊 Test Reports & Coverage
+
+- **📈 Latest Coverage Report**: [JaCoCo HTML Report](https://storage.googleapis.com/inspire26_cloudbuild_artifacts/jacoco/latest/index.html)
+- **🏗️ Build History**: [Google Cloud Build](https://console.cloud.google.com/cloud-build/builds?project=inspire26)
+- **🐳 Docker Images**: [Docker Hub](https://hub.docker.com/r/aa061872/store-app)
+  
+
+
 ## CI/CD Pipeline
 This project uses **Google Cloud Build** for continuous integration and deployment. See [GCLOUD-BUILD-SETUP.md](GCLOUD-BUILD-SETUP.md) for detailed setup instructions.
 

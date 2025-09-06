@@ -34,15 +34,23 @@ steps:
       - |
         # Extract coverage percentage from JaCoCo XML report
         if [ -f "build/reports/jacoco/test/jacocoTestReport.xml" ]; then
-          # Parse coverage from XML - get instruction coverage (most common metric)
-          MISSED=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'missed="[0-9]*"' | cut -d'"' -f2)
-          COVERED=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'covered="[0-9]*"' | cut -d'"' -f2)
-        
+          # Sum all instruction counters from the XML report
+          MISSED_SUM=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'missed="[0-9]*"' | cut -d'"' -f2 | awk '{s+=$1} END {print s}')
+          COVERED_SUM=$(grep '<counter type="INSTRUCTION"' build/reports/jacoco/test/jacocoTestReport.xml | grep -o 'covered="[0-9]*"' | cut -d'"' -f2 | awk '{s+=$1} END {print s}')
+
+          # Default to 0 if no values are found to prevent errors
+          MISSED=${MISSED_SUM:-0}
+          COVERED=${COVERED_SUM:-0}
+
           if [ ! -z "$$MISSED" ] && [ ! -z "$$COVERED" ] && [ "$$MISSED" != "0" -o "$$COVERED" != "0" ]; then
             TOTAL=$((MISSED + COVERED))
-            PERCENTAGE=$((COVERED * 100 / TOTAL))
+            if [ $$TOTAL -eq 0 ]; then
+                PERCENTAGE=0
+            else
+                PERCENTAGE=$(((COVERED * 100) / TOTAL))
+            fi
             echo "Coverage: $$PERCENTAGE% ($$COVERED/$$TOTAL instructions)"
-        
+
             # Determine badge color
             if [ $$PERCENTAGE -ge 80 ]; then
               COLOR="4c1"     # green
@@ -53,7 +61,7 @@ steps:
             else
               COLOR="e05d44"  # red
             fi
-        
+
             # Create coverage badge SVG
             cat > /workspace/coverage.svg << EOF
         <svg xmlns="http://www.w3.org/2000/svg" width="104" height="20">
@@ -72,12 +80,12 @@ steps:
           <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110">
             <text x="325" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="530">coverage</text>
             <text x="325" y="140" transform="scale(.1)" textLength="530">coverage</text>
-            <text x="835" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="310">$$PERCENTAGE%</text>
-            <text x="835" y="140" transform="scale(.1)" textLength="310">$$PERCENTAGE%</text>
+            <text x="835" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="310">${PERCENTAGE}%</text>
+            <text x="835" y="140" transform="scale(.1)" textLength="310">${PERCENTAGE}%</text>
           </g>
         </svg>
         EOF
-        
+
             # Upload coverage badge
             gsutil -m cp /workspace/coverage.svg gs://${_BADGE_BUCKET}/coverage/coverage.svg
             gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/coverage/coverage.svg || true
@@ -119,7 +127,7 @@ steps:
         gsutil -m cp -r gs://${_BUCKET_NAME}/jacoco/$BUILD_ID/* gs://${_BUCKET_NAME}/jacoco/latest/ || true
         gsutil -m acl ch -r -u AllUsers:R gs://${_BUCKET_NAME}/jacoco/latest/ || true
         
-        echo "aCoCo reports available at:"
+        echo "JaCoCo reports available at:"
         echo "https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$BUILD_ID/index.html"
         echo "https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/latest/index.html"
     waitFor:
@@ -201,7 +209,7 @@ steps:
         gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/${BRANCH_NAME}/status.svg || true
         gsutil acl ch -u AllUsers:R gs://${_BADGE_BUCKET}/builds/main/status.svg || true
         
-        echo "✅ Success badge created and uploaded"
+        echo "Success badge created and uploaded"
     waitFor:
       - Push-Docker-Image
 
