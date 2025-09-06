@@ -25,10 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+
 /**
- * Implementation of ProductService following SOLID principles. Single Responsibility: Manages product business logic.
- * Open/Closed: Extensible through interface. Dependency Inversion: Depends on abstractions (ValidationService,
- * ProductRepository).
+ * The type Product service.
  */
 @Service
 @RequiredArgsConstructor

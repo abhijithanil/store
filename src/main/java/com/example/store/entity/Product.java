@@ -11,9 +11,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Product entity following SOLID principles. Single Responsibility: Represents product data structure with proper JPA
- * relationships.
+ * Product Entity.
  */
 @Entity
 @Data

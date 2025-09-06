@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
- * Global exception handler for the application following SOLID principles. Centralizes exception handling logic and
- * provides consistent error responses.
+ * Global exception handler.
  */
 @RestControllerAdvice
 @Slf4j
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles validation errors from @Valid annotations.
      *
-     * @param ex the validation exception
+     * @param ex      the validation exception
      * @param request the web request
      * @return error response with validation details
      */
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles customer not found exceptions.
      *
-     * @param ex the customer not found exception
+     * @param ex      the customer not found exception
      * @param request the web request
      * @return error response
      */
@@ -79,7 +79,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles order not found exceptions.
      *
-     * @param ex the order not found exception
+     * @param ex      the order not found exception
      * @param request the web request
      * @return error response
      */
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles product not found exceptions.
      *
-     * @param ex the product not found exception
+     * @param ex      the product not found exception
      * @param request the web request
      * @return error response
      */
@@ -124,7 +124,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles validation exceptions.
      *
-     * @param ex the validation exception
+     * @param ex      the validation exception
      * @param request the web request
      * @return error response
      */
@@ -146,7 +146,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles illegal argument exceptions.
      *
-     * @param ex the illegal argument exception
+     * @param ex      the illegal argument exception
      * @param request the web request
      * @return error response
      */
@@ -169,7 +169,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles generic runtime exceptions.
      *
-     * @param ex the runtime exception
+     * @param ex      the runtime exception
      * @param request the web request
      * @return error response
      */
@@ -191,7 +191,7 @@ public class GlobalExceptionHandler {
     /**
      * Handles all other exceptions.
      *
-     * @param ex the exception
+     * @param ex      the exception
      * @param request the web request
      * @return error response
      */

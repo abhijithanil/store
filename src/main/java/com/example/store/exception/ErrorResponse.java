@@ -6,9 +6,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+
 /**
- * Standard error response structure for consistent API error handling. Follows SOLID principles by providing a single
- * responsibility for error representation.
+ * Error response.
  */
 @Data
 @Builder

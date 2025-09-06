@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+
 /**
- * Repository interface for Product operations following SOLID principles. Interface Segregation: Defines only
- * product-related operations. Dependency Inversion: Depends on abstractions, not concrete implementations.
+ * The interface Product repository.
  */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -29,7 +29,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * Finds products by description containing the given substring (case-insensitive) with pagination support.
      *
-     * @param query the substring to search for in product descriptions
+     * @param query    the substring to search for in product descriptions
      * @param pageable pagination information
      * @return page of products matching the search criteria
      */

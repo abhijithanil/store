@@ -7,17 +7,16 @@ import com.example.store.entity.Product;
 import java.util.List;
 
 /**
- * Service interface for product operations following SOLID principles. Interface Segregation: Defines only
- * product-related operations. Dependency Inversion: Depends on abstractions, not concrete implementations.
+ * The interface Product service.
  */
 public interface ProductService {
 
     /**
      * Retrieves all products with pagination support.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sortBy the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of products with their associated order IDs
      */
@@ -49,7 +48,7 @@ public interface ProductService {
     /**
      * Updates an existing product.
      *
-     * @param id the product ID
+     * @param id      the product ID
      * @param product the updated product data
      * @return the updated product DTO
      */
@@ -65,10 +64,10 @@ public interface ProductService {
     /**
      * Searches for products whose description contains the given query string with pagination support.
      *
-     * @param query the search query string
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sortBy the field to sort by
+     * @param query     the search query string
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of products matching the search criteria
      */
@@ -87,9 +86,9 @@ public interface ProductService {
     /**
      * Retrieves products that are contained in orders with pagination support.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sortBy the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of products that have associated orders
      */
@@ -105,9 +104,9 @@ public interface ProductService {
     /**
      * Retrieves products that are not contained in any orders with pagination support.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sortBy the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of products that have no associated orders
      */

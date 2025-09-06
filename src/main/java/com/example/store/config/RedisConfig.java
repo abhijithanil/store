@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Redis configuration for transactional caching following SOLID principles. Single Responsibility: Configures Redis
- * cache manager with proper serialization and TTL settings.
+ * The type Redis config.
  */
 @Configuration
 @EnableCaching
@@ -26,12 +25,13 @@ import java.util.Map;
 public class RedisConfig {
 
     /**
-     * Configures Redis cache manager with different TTL settings for different cache types. Implements
-     * transaction-aware caching for better performance and consistency.
+     * Cache manager.
+     *
+     * @param redisConnectionFactory the redis connection factory
+     * @return the cache manager
      */
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        // Default cache configuration
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .serializeKeysWith(
@@ -40,16 +40,12 @@ public class RedisConfig {
                         new GenericJackson2JsonRedisSerializer()))
                 .disableCachingNullValues();
 
-        // Customer cache configuration - shorter TTL for frequently updated data
         RedisCacheConfiguration customerConfig = defaultConfig.entryTtl(Duration.ofMinutes(5));
 
-        // Product cache configuration - longer TTL for relatively stable data
         RedisCacheConfiguration productConfig = defaultConfig.entryTtl(Duration.ofMinutes(15));
 
-        // Order cache configuration - medium TTL for transactional data
         RedisCacheConfiguration orderConfig = defaultConfig.entryTtl(Duration.ofMinutes(8));
 
-        // Paginated data cache configuration - shorter TTL for dynamic data
         RedisCacheConfiguration pagedConfig = defaultConfig.entryTtl(Duration.ofMinutes(3));
 
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
@@ -63,7 +59,7 @@ public class RedisConfig {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
-                .transactionAware() // Enable transaction-aware caching
+                .transactionAware()
                 .build();
     }
 }

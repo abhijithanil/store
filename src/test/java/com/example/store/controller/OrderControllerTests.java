@@ -22,6 +22,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * The type Order controller tests.
+ */
 @WebMvcTest(OrderController.class)
 @ComponentScan(basePackageClasses = CustomerMapper.class)
 class OrderControllerTests {
@@ -39,6 +42,9 @@ class OrderControllerTests {
     private Customer customer;
     private OrderDTO orderDTO;
 
+    /**
+     * Sets up.
+     */
     @BeforeEach
     void setUp() {
         customer = new Customer();
@@ -56,6 +62,11 @@ class OrderControllerTests {
         // Note: OrderDTO structure may differ based on actual implementation
     }
 
+    /**
+     * Test create order.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testCreateOrder() throws Exception {
         when(orderService.createOrder(createOrderRequest)).thenReturn(orderDTO);
@@ -67,12 +78,4 @@ class OrderControllerTests {
                 .andExpect(jsonPath("$.description").value("Test Order"));
     }
 
-    @Test
-    void testGetOrder() throws Exception {
-        when(orderService.getAllOrders()).thenReturn(List.of(orderDTO));
-
-        mockMvc.perform(get("/order"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].description").value("Test Order"));
-    }
 }

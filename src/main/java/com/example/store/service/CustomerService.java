@@ -4,18 +4,18 @@ import com.example.store.dto.CustomerDTO;
 import com.example.store.dto.PagedResponse;
 import com.example.store.entity.Customer;
 
+
 /**
- * Service interface for customer operations following SOLID principles. Interface Segregation: Defines only
- * customer-related operations. Dependency Inversion: Depends on abstractions, not concrete implementations.
+ * The interface Customer service.
  */
 public interface CustomerService {
 
     /**
      * Retrieves all customers with pagination support.
      *
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sortBy the field to sort by
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of customers
      */
@@ -32,10 +32,10 @@ public interface CustomerService {
     /**
      * Searches for customers whose name contains the given query string with pagination support.
      *
-     * @param query the search query string
-     * @param page the page number (0-based)
-     * @param size the page size
-     * @param sortBy the field to sort by
+     * @param query     the search query string
+     * @param page      the page number (0-based)
+     * @param size      the page size
+     * @param sortBy    the field to sort by
      * @param sortOrder the sort direction (asc/desc)
      * @return paged response of customers matching the search criteria
      */
