@@ -1,52 +1,39 @@
+substitutions:
+  _BUCKET_NAME: 'inspire26_cloudbuild_artifacts'
+
 steps:
-  # =============================================================================
-  # == 1. Run Unit & Integration Tests                                         ==
-  # =============================================================================
+  - name: 'ubuntu'
+    id: Make-Gradle-Executable
+    entrypoint: 'chmod'
+    args: ['+x', './gradlew']
+    waitFor: ['-']
+
   - name: 'gradle:8.5-jdk17-alpine'
     id: Run-Tests
     entrypoint: './gradlew'
     args: ['test', 'jacocoTestReport']
-    waitFor: ['-']
+    dir: '.'  # <-- FIX: Run command in the project's root directory
+    waitFor:
+      - Make-Gradle-Executable
 
-  # =============================================================================
-  # == 2. Build the Application JAR                                            ==
-  # =============================================================================
   - name: 'gradle:8.5-jdk17-alpine'
     id: Build-Application
     entrypoint: './gradlew'
     args: ['build', '-x', 'test', '--no-daemon']
+    dir: '.'  # <-- FIX: Run command in the project's root directory
     waitFor:
       - Run-Tests
 
-  # =============================================================================
-  # == 3. Retrieve Docker Hub Password from Secret Manager                     ==
-  # =============================================================================
   - name: 'gcr.io/cloud-builders/gcloud'
     id: Get-Docker-Password
-    entrypoint: 'gcloud'
+    entrypoint: 'bash'
     args:
-      - 'secrets'
-      - 'versions'
-      - 'access'
-      - 'latest'
-      - '--secret=dockerhub-password'
-      - '--project=inspire26'
-      - '--format=get(payload.data)'
-      - '|'
-      - 'tr'
-      - '_-'
-      - '/+'
-      - '|'
-      - 'base64'
-      - '-d'
-      - '>'
-      - '/workspace/docker-password.txt'
+      - '-c'
+      - |
+        gcloud secrets versions access latest --secret=dockerhub-password --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/docker-password.txt
     waitFor:
       - Build-Application
 
-  # =============================================================================
-  # == 4. Login to Docker Hub                                                  ==
-  # =============================================================================
   - name: 'gcr.io/cloud-builders/docker'
     id: Docker-Login
     entrypoint: 'sh'
@@ -56,9 +43,6 @@ steps:
     waitFor:
       - Get-Docker-Password
 
-  # =============================================================================
-  # == 5. Build Docker Image                                                   ==
-  # =============================================================================
   - name: 'gcr.io/cloud-builders/docker'
     id: Build-Docker-Image
     args:
@@ -69,9 +53,6 @@ steps:
     waitFor:
       - Docker-Login
 
-  # =============================================================================
-  # == 6. Push Docker Image to Docker Hub                                      ==
-  # =============================================================================
   - name: 'gcr.io/cloud-builders/docker'
     id: Push-Docker-Image
     args:
@@ -80,9 +61,6 @@ steps:
     waitFor:
       - Build-Docker-Image
 
-# =============================================================================
-# == Optional: Specify artifacts to store (e.g., JaCoCo reports)             ==
-# =============================================================================
 artifacts:
   objects:
     location: 'gs://${_BUCKET_NAME}/jacoco/$COMMIT_SHA/'
