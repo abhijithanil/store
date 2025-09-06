@@ -16,7 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -142,5 +149,122 @@ class CustomerServiceImplTest {
         verify(validationService).validateCustomerId(customerId);
         verify(customerRepository).findById(customerId);
         verify(customerMapper, never()).customerToCustomerDTO(any());
+    }
+
+    /** Should search customers by name successfully. */
+    @Test
+    @DisplayName("Should search customers by name successfully")
+    void shouldSearchCustomersByNameSuccessfully() {
+        // Given
+        String query = "john";
+        List<Customer> customers = Arrays.asList(customer);
+        Page<Customer> customerPage = new PageImpl<>(customers);
+        
+        doNothing().when(validationService).validateSearchQuery(query);
+        when(customerRepository.findByNameContainingIgnoreCase(eq(query), any(Pageable.class))).thenReturn(customerPage);
+
+        // When
+        customerService.searchCustomersByName(query, 0, 10, "name", "asc");
+
+        // Then
+        verify(validationService).validateSearchQuery(query);
+        verify(customerRepository).findByNameContainingIgnoreCase(eq(query), any(Pageable.class));
+    }
+
+    /** Should return all customers when search query is empty. */
+    @Test
+    @DisplayName("Should return all customers when search query is empty")
+    void shouldReturnAllCustomersWhenSearchQueryIsEmpty() {
+        // Given
+        String query = "";
+        List<Customer> customers = Arrays.asList(customer);
+        Page<Customer> customerPage = new PageImpl<>(customers);
+        
+        doNothing().when(validationService).validateSearchQuery(query);
+        when(customerRepository.findAll(any(Pageable.class))).thenReturn(customerPage);
+
+        // When
+        customerService.searchCustomersByName(query, 0, 10, "name", "asc");
+
+        // Then
+        verify(validationService).validateSearchQuery(query);
+        verify(customerRepository).findAll(any(Pageable.class));
+    }
+
+    /** Should throw validation exception when search query is invalid. */
+    @Test
+    @DisplayName("Should throw ValidationException when search query is invalid")
+    void shouldThrowValidationExceptionWhenSearchQueryIsInvalid() {
+        // Given
+        String invalidQuery = "a"; // Too short
+
+        doThrow(new ValidationException("Invalid search query"))
+                .when(validationService)
+                .validateSearchQuery(invalidQuery);
+
+        // When & Then
+        ValidationException exception = assertThrows(
+                ValidationException.class, () -> customerService.searchCustomersByName(invalidQuery, 0, 10, "name", "asc"));
+        assertEquals("Invalid search query", exception.getMessage());
+        verify(validationService).validateSearchQuery(invalidQuery);
+        verify(customerRepository, never()).findByNameContainingIgnoreCase(any(), any());
+    }
+
+    /** Should handle repository exception in search gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception in search gracefully")
+    void shouldHandleRepositoryExceptionInSearchGracefully() {
+        // Given
+        String query = "john";
+        doNothing().when(validationService).validateSearchQuery(query);
+        when(customerRepository.findByNameContainingIgnoreCase(eq(query), any(org.springframework.data.domain.Pageable.class)))
+                .thenThrow(new RuntimeException("Database connection failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(
+                RuntimeException.class, () -> customerService.searchCustomersByName(query, 0, 10, "name", "asc"));
+        assertEquals("Failed to search customers", exception.getMessage());
+        verify(validationService).validateSearchQuery(query);
+        verify(customerRepository).findByNameContainingIgnoreCase(eq(query), any(org.springframework.data.domain.Pageable.class));
+    }
+
+    /** Should handle repository exception in create gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception in create gracefully")
+    void shouldHandleRepositoryExceptionInCreateGracefully() {
+        // Given
+        Customer customerToCreate = new Customer();
+        customerToCreate.setName("Jane Smith");
+
+        doNothing().when(validationService).validateCustomerName("Jane Smith");
+        when(validationService.sanitizeName("Jane Smith")).thenReturn("Jane Smith");
+        when(customerRepository.save(any(Customer.class)))
+                .thenThrow(new RuntimeException("Database connection failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(
+                RuntimeException.class, () -> customerService.createCustomer(customerToCreate));
+        assertEquals("Failed to create customer", exception.getMessage());
+        verify(validationService).validateCustomerName("Jane Smith");
+        verify(validationService).sanitizeName("Jane Smith");
+        verify(customerRepository).save(customerToCreate);
+    }
+
+    /** Should handle repository exception in get by id gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception in get by id gracefully")
+    void shouldHandleRepositoryExceptionInGetByIdGracefully() {
+        // Given
+        Long customerId = 1L;
+        doNothing().when(validationService).validateCustomerId(customerId);
+        when(customerRepository.findById(customerId))
+                .thenThrow(new RuntimeException("Database connection failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(
+                RuntimeException.class, () -> customerService.getCustomerById(customerId));
+        assertEquals("Failed to retrieve customer", exception.getMessage());
+        verify(validationService).validateCustomerId(customerId);
+        verify(customerRepository).findById(customerId);
     }
 }

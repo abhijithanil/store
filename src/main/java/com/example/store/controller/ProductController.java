@@ -1,5 +1,6 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
 import com.example.store.service.ProductService;
@@ -80,7 +81,7 @@ public class ProductController {
                                         schema = @Schema(implementation = ProductDTO.class))),
                 @ApiResponse(responseCode = "400", description = "Invalid product data")
             })
-    public ProductDTO createProduct(@Valid @RequestBody Product product) {
+    public ProductDTO createProduct(@Valid @RequestBody CreateProductRequest product) {
         return productService.createProduct(product);
     }
 

@@ -259,7 +259,7 @@ steps:
 artifacts:
   objects:
     location: 'gs://${_BUCKET_NAME}/jacoco/latest/'
-    paths: ['build/reports/jacoco/test/html/**']
+    paths: ['build/reports/jacoco/test/html/**/*']
 
 options:
   logging: CLOUD_LOGGING_ONLY

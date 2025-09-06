@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.PagedResponse;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
@@ -33,7 +34,7 @@ public interface ProductService {
      * @param product the product to create
      * @return the created product DTO
      */
-    ProductDTO createProduct(Product product);
+    ProductDTO createProduct(CreateProductRequest product);
 
     /**
      * Retrieves a product by ID.

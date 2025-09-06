@@ -1,5 +1,6 @@
 package com.example.store.controller;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
 import com.example.store.mapper.ProductMapper;
@@ -35,15 +36,14 @@ class ProductControllerTests {
     @MockitoBean
     private ProductService productService;
 
-    private Product product;
+    private CreateProductRequest product;
     private ProductDTO productDTO;
 
     /** Sets up. */
     @BeforeEach
     void setUp() {
-        product = new Product();
+        product = new CreateProductRequest();
         product.setDescription("Laptop Computer");
-        product.setId(1L);
 
         productDTO = new ProductDTO();
         productDTO.setDescription("Laptop Computer");

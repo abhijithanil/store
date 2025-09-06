@@ -1,5 +1,6 @@
 package com.example.store.service.impl;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.PagedResponse;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
@@ -83,22 +84,23 @@ public class ProductServiceImpl implements ProductService {
     @CacheEvict(
             value = {"products", "pagedProducts"},
             allEntries = true)
-    public ProductDTO createProduct(Product product) {
-        log.debug("Creating new product: {}", product);
+    public ProductDTO createProduct(CreateProductRequest createProductRequest) {
+        log.debug("Creating new product: {}", createProductRequest);
 
         // Validate input
-        validationService.validateProductDescription(product.getDescription());
+        validationService.validateProductDescription(createProductRequest.getDescription());
 
         try {
             // Sanitize input
-            product.setDescription(validationService.sanitizeDescription(product.getDescription()));
+            Product product = new Product();
+            product.setDescription(validationService.sanitizeDescription(createProductRequest.getDescription()));
 
             Product savedProduct = productRepository.save(product);
             log.info("Successfully created product with ID: {}", savedProduct.getId());
 
             return productMapper.productToProductDTO(savedProduct);
         } catch (Exception e) {
-            log.error("Error creating product: {}", product, e);
+            log.error("Error creating product: {}", createProductRequest, e);
             throw new RuntimeException("Failed to create product", e);
         }
     }

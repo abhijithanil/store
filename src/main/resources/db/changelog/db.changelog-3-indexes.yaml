@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: add-performance-indexes
-      author: system
+      author: developer
       comment: Add database indexes for performance optimization
       preConditions:
         - onFail: MARK_RAN

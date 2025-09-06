@@ -1,4 +1,4 @@
-# Google Cloud Build Setup Guide
+./# Google Cloud Build Setup Guide
 
 This guide will help you set up Google Cloud Build for the Spring Boot Store Application.
 
