@@ -260,19 +260,21 @@ steps:
             else
               # Stage and commit changes
               git add README.md
-              git commit -m "Update JaCoCo coverage report link for branch: $$JCURRENT_BRANCH [skip ci]"
+              git commit -m "Update JaCoCo coverage report link for branch: $$CURRENT_BRANCH [skip ci]"
             
               # Set up authentication for GitHub push (assuming you have a GitHub token in Secret Manager)
               gcloud secrets versions access latest --secret=GITHUB_TOKEN --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/github-token.txt
               GITHUB_TOKEN=$(cat /workspace/github-token.txt)
             
               # Configure Git to use the token for authentication
-              git remote set-url origin https://oauth2:$$GITHUB_TOKEN@github.com/YOUR_USERNAME/YOUR_REPO.git
-            
-              # Push changes to the current branch
-              git push origin $$CURRENT_BRANCH
-            
-              echo "Successfully updated JaCoCo report link and pushed to GitHub"
+              git remote set-url origin https://oauth2:$$GITHUB_TOKEN@github.com/abhijithanil/store.git
+          
+              git branch --set-upstream-to=origin/$$CURRENT_BRANCH
+              
+              git push
+          
+          
+            echo "Successfully updated JaCoCo report link and pushed to GitHub"
             fi
             
             # Clean up token file

@@ -270,7 +270,9 @@ steps:
           git remote set-url origin https://oauth2:$$GITHUB_TOKEN@github.com/abhijithanil/store.git
         
           # Push changes to the current branch
-          git push origin $$CURRENT_BRANCH
+          git branch --set-upstream-to=origin/$$CURRENT_BRANCH
+        
+          git push
         
           echo "Successfully updated JaCoCo report link and pushed to GitHub"
         fi
