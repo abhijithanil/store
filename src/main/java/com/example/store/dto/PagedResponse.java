@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * Generic paged response DTO following SOLID principles. Single Responsibility: Represents paginated data structure.
+ * Paged response.
+ *
+ * @param <T> the type parameter
  */
 @Data
 @NoArgsConstructor
@@ -28,6 +30,7 @@ public class PagedResponse<T> {
     /**
      * Creates a PagedResponse from Spring Data Page object.
      *
+     * @param <T> the type parameter
      * @param page the Spring Data Page object
      * @param sortBy the sort field
      * @param sortOrder the sort direction

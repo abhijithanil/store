@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/** Customer controller. */
 @RestController
 @RequestMapping("/customer")
 @RequiredArgsConstructor
@@ -27,6 +28,15 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    /**
+     * Gets all customers paged.
+     *
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
+     * @param sortOrder the sort order
+     * @return the all customers paged
+     */
     @GetMapping("/all")
     @Operation(
             summary = "Get all customers with pagination",
@@ -50,6 +60,12 @@ public class CustomerController {
         return customerService.getAllCustomers(page, size, sortBy, sortOrder);
     }
 
+    /**
+     * Create customer customer dto.
+     *
+     * @param customer the customer
+     * @return the customer dto
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new customer", description = "Create a new customer with the provided information")
@@ -68,6 +84,12 @@ public class CustomerController {
         return customerService.createCustomer(customer);
     }
 
+    /**
+     * Gets customer by id.
+     *
+     * @param id the id
+     * @return the customer by id
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get customer by ID", description = "Retrieve a specific customer by their ID")
     @ApiResponses(
@@ -87,6 +109,16 @@ public class CustomerController {
         return customerService.getCustomerById(id);
     }
 
+    /**
+     * Search customers com . example . store . dto . paged response.
+     *
+     * @param query the query
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
+     * @param sortOrder the sort order
+     * @return the com . example . store . dto . paged response
+     */
     @GetMapping("/search")
     @Operation(
             summary = "Search customers by name with pagination",

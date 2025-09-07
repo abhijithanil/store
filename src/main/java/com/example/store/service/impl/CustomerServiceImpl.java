@@ -24,11 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-/**
- * Implementation of CustomerService following SOLID principles. Single Responsibility: Manages customer business logic.
- * Open/Closed: Extensible through interface. Dependency Inversion: Depends on abstractions (ValidationService,
- * CustomerRepository).
- */
+/** The type Customer service. */
 @Service
 @RequiredArgsConstructor
 @Slf4j

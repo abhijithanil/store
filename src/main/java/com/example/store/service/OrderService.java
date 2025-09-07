@@ -7,6 +7,7 @@ import com.example.store.dto.PagedResponse;
 import java.util.List;
 import java.util.Optional;
 
+/** The interface Order service. */
 public interface OrderService {
     /**
      * Retrieves all orders with pagination support.
@@ -26,6 +27,12 @@ public interface OrderService {
      */
     List<OrderDTO> getAllOrders();
 
+    /**
+     * Gets order by id.
+     *
+     * @param id the id
+     * @return the order by id
+     */
     Optional<OrderDTO> getOrderById(Long id);
 
     /**

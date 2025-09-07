@@ -10,10 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-/**
- * Repository interface for Product operations following SOLID principles. Interface Segregation: Defines only
- * product-related operations. Dependency Inversion: Depends on abstractions, not concrete implementations.
- */
+/** The interface Product repository. */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     /**

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/** The type Customer controller tests. */
 @WebMvcTest(CustomerController.class)
 @ComponentScan(basePackageClasses = CustomerMapper.class)
 class CustomerControllerTests {
@@ -35,6 +36,7 @@ class CustomerControllerTests {
     private Customer customer;
     private CustomerDTO customerDTO;
 
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         customer = new Customer();
@@ -46,6 +48,11 @@ class CustomerControllerTests {
         customerDTO.setId(1L);
     }
 
+    /**
+     * Test create customer.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testCreateCustomer() throws Exception {
         when(customerService.createCustomer(customer)).thenReturn(customerDTO);
@@ -57,6 +64,11 @@ class CustomerControllerTests {
                 .andExpect(jsonPath("$.name").value("John Doe"));
     }
 
+    /**
+     * Test get customer by id.
+     *
+     * @throws Exception the exception
+     */
     @Test
     void testGetCustomerById() throws Exception {
         when(customerService.getCustomerById(1L)).thenReturn(customerDTO);

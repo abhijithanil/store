@@ -14,10 +14,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Global exception handler for the application following SOLID principles. Centralizes exception handling logic and
- * provides consistent error responses.
- */
+/** Global exception handler. */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

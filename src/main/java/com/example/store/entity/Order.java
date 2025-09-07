@@ -9,10 +9,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Order entity following SOLID principles. Single Responsibility: Represents order data structure with proper JPA
- * relationships.
- */
+/** Order Entity. */
 @Entity
 @Data
 @Table(name = "\"order\"")

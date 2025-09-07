@@ -5,10 +5,7 @@ import com.example.store.exception.ValidationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-/**
- * Service responsible for input validation following SOLID principles. Single Responsibility: Handles all validation
- * logic for the application.
- */
+/** The type Validation service. */
 @Service
 public class ValidationService {
 

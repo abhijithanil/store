@@ -1,0 +1,46 @@
+# Google Cloud Build ignore file
+# Exclude unnecessary files from the build context
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Build artifacts (will be generated during build)
+build/
+.gradle/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+docs/
+
+# Scripts (except test scripts)
+scripts/
+!scripts/test-api-ci.sh
+
+# Docker files (not needed for Cloud Build)
+docker-compose.yml
+.dockerignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+temp/

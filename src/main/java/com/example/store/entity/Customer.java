@@ -11,7 +11,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Customer entity following SOLID principles. Single Responsibility: Represents customer data structure. */
+/** Customer Entity. */
 @Entity
 @Data
 public class Customer {

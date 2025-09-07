@@ -12,21 +12,36 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-/**
- * Mapper interface for Order entity and DTO following SOLID principles. Single Responsibility: Handles mapping between
- * Order entity and OrderDTO.
- */
+/** The interface Order mapper. */
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
+    /**
+     * Order to order dto order dto.
+     *
+     * @param order the order
+     * @return the order dto
+     */
     @Mapping(
             target = "products",
             expression =
                     "java(order.getProducts() != null ? productsToProductDTOs(order.getProducts()) : java.util.Collections.emptyList())")
     OrderDTO orderToOrderDTO(Order order);
 
+    /**
+     * Orders to order dt os list.
+     *
+     * @param orders the orders
+     * @return the list
+     */
     List<OrderDTO> ordersToOrderDTOs(List<Order> orders);
 
+    /**
+     * Order to order customer dto order customer dto.
+     *
+     * @param customer the customer
+     * @return the order customer dto
+     */
     OrderCustomerDTO orderToOrderCustomerDTO(Customer customer);
 
     /**

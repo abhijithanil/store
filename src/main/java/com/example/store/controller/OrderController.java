@@ -20,8 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.List;
-
+/** Order controller. */
 @RestController
 @RequestMapping("/order")
 @RequiredArgsConstructor
@@ -30,23 +29,16 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
-    @Operation(summary = "Get all orders", description = "Retrieve a list of all orders")
-    @ApiResponses(
-            value = {
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Successfully retrieved orders",
-                        content =
-                                @Content(
-                                        mediaType = "application/json",
-                                        schema = @Schema(implementation = OrderDTO.class)))
-            })
-    public List<OrderDTO> getAllOrders() {
-        return orderService.getAllOrders();
-    }
-
-    @GetMapping("/all")
+    /**
+     * Gets all orders paged.
+     *
+     * @param page the page
+     * @param size the size
+     * @param sortBy the sort by
+     * @param sortOrder the sort order
+     * @return the all orders paged
+     */
+    @GetMapping("")
     @Operation(summary = "Get all orders with pagination", description = "Retrieve a paginated list of all orders")
     @ApiResponses(
             value = {
@@ -67,6 +59,12 @@ public class OrderController {
         return orderService.getAllOrders(page, size, sortBy, sortOrder);
     }
 
+    /**
+     * Gets order by id.
+     *
+     * @param id the id
+     * @return the order by id
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get order by ID", description = "Retrieve a specific order by its ID")
     @ApiResponses(
@@ -86,6 +84,12 @@ public class OrderController {
                 .build());
     }
 
+    /**
+     * Create order order dto.
+     *
+     * @param request the request
+     * @return the order dto
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new order", description = "Create a new order with the provided information")

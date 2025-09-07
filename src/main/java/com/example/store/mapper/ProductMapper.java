@@ -8,10 +8,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-/**
- * Mapper interface for Product entity and DTO following SOLID principles. Single Responsibility: Handles mapping
- * between Product entity and ProductDTO.
- */
+/** The interface Product mapper. */
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 

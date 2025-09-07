@@ -10,24 +10,24 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/** The interface Customer repository. */
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     /**
-     * Finds customers whose name contains the given substring (case-insensitive). The search matches any word in the
-     * customer's name that contains the query string.
+     * Find by name containing ignore case list.
      *
-     * @param query the substring to search for in customer names
-     * @return list of customers matching the search criteria
+     * @param query the query
+     * @return the list
      */
     @Query("SELECT c FROM Customer c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Customer> findByNameContainingIgnoreCase(@Param("query") String query);
 
     /**
-     * Finds customers whose name contains the given substring (case-insensitive) with pagination support.
+     * Find by name containing ignore case page.
      *
-     * @param query the substring to search for in customer names
-     * @param pageable pagination information
-     * @return page of customers matching the search criteria
+     * @param query the query
+     * @param pageable the pageable
+     * @return the page
      */
     @Query("SELECT c FROM Customer c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Customer> findByNameContainingIgnoreCase(@Param("query") String query, Pageable pageable);

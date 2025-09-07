@@ -2,9 +2,8 @@ package com.example.store.dto;
 
 import lombok.Data;
 
-/** Customer order dto. */
+/** The type Create product request. */
 @Data
-public class CustomerOrderDTO {
-    private Long id;
+public class CreateProductRequest {
     private String description;
 }

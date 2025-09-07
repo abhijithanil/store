@@ -6,9 +6,7 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * Request DTO for creating orders following SOLID principles. Single Responsibility: Represents order creation data.
- */
+/** Create order request. */
 @Data
 public class CreateOrderRequest {
 

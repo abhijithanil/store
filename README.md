@@ -1,6 +1,32 @@
 # Store Application
 The Store application keeps track of customers and orders in a database.
 
+
+
+[![Build Status](https://storage.googleapis.com/inspire26-build-badges/builds/main/status.svg)](https://console.cloud.google.com/cloud-build/builds?project=inspire26)
+[![Coverage](https://storage.googleapis.com/inspire26-build-badges/coverage/coverage.svg)](https://storage.googleapis.com/inspire26_cloudbuild_artifacts/jacoco/<branch_name>/index.html)
+[![Docker](https://img.shields.io/badge/docker-aa061872%2Fstore--app-blue?logo=docker&logoColor=white)](https://hub.docker.com/r/aa061872/store-app)
+  
+  ## 📊 Test Reports & Coverage
+
+- **📈 Latest Coverage Report**: [JaCoCo HTML Report](https://storage.googleapis.com/inspire26_cloudbuild_artifacts/jacoco/latest/index.html)
+- **🏗️ Build History**: [Google Cloud Build](https://console.cloud.google.com/cloud-build/builds?project=inspire26)
+- **🐳 Docker Images**: [Docker Hub](https://hub.docker.com/r/aa061872/store-app)
+  
+
+
+## CI/CD Pipeline
+This project uses **Google Cloud Build** for continuous integration and deployment. See [GCLOUD-BUILD-SETUP.md](GCLOUD-BUILD-SETUP.md) for detailed setup instructions.
+
+### Quick Start with Google Cloud Build
+```bash
+# Run the setup script
+./setup-gcloud-build.sh
+
+# Manual build
+gcloud builds submit --config=cloudbuild.yaml .
+```
+
 # Assumptions
 This README assumes you're using a posix environment. It's possible to run this on Windows as well:
 * Instead of `./gradlew` use `gradlew.bat`
@@ -25,7 +51,10 @@ docker run -d \
   postgres:16.2 \
   postgres -c wal_level=logical
 ```
-
+Start redis server instance like this:
+```shell
+  docker run -d  --name redis -p 6379:6379  --restart unless-stopped  redis:7-alpine redis-server --maxmemory 500mb --maxmemory-policy allkeys-lru
+```
 # Running the application
 You should be able to run the service using
 ```shell
@@ -42,18 +71,19 @@ A customer has an ID, a name, and 0 or more orders.
 Two endpoints are provided:
    * /order
    * /customer
+   * /product
 
 Each of them supports a POST and a GET. The data model is circular - a customer owns a number of orders, and that order necessarily refers back to the customer which owns it.
 To avoid loops in the serializer, when writing out a Customer or an Order, they're mapped to CustomerDTO and OrderDTO which contain truncated versions of the dependent object - CustomerOrderDTO and OrderCustomerDTO respectively.
 
-The API is documented in the OpenAPI file OpenAPI.yaml. Note that this spec includes part of one of the tasks below (the new /products endpoint)
+The API is documented in the OpenAPI file OpenAPI.yaml.
 
 # Tasks
 
-1. Extend the order endpoint to find a specific order, by ID
-2. Extend the customer endpoint to find customers based on a query string to match a substring of one of the words in their name
-3. Users have complained that in production the GET endpoints can get very slow. The database is unfortunately not co-located with the application server, and there's high latency between the two. Identify if there are any optimisations that can improve performance
-4. Add a new endpoint /products to model products which appear in an order:
+1. Extend the order endpoint to find a specific order, by ID - Completed
+2. Extend the customer endpoint to find customers based on a query string to match a substring of one of the words in their name - Completed
+3. Users have complained that in production the GET endpoints can get very slow. The database is unfortunately not co-located with the application server, and there's high latency between the two. Identify if there are any optimisations that can improve performance - Completed
+4. Add a new endpoint /products to model products which appear in an order: - Completed
       * A single order contains 1 or more products. 
       * A product has an ID and a description. 
       * Add a POST endpoint to create a product
@@ -62,7 +92,7 @@ The API is documented in the OpenAPI file OpenAPI.yaml. Note that this spec incl
       * Change the orders endpoint to return a list of products contained in the order
 
 # Bonus points
-1. Implement a CI pipeline on the platform of your choice to build the project and deliver it as a Dockerized image
+1. Implement a CI pipeline on the platform of your choice to build the project and deliver it as a Dockerized image - Completed
 
 # Notes on the tasks
 Assume that the project represents a production application.

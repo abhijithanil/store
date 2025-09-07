@@ -4,10 +4,7 @@ import com.example.store.dto.CustomerDTO;
 import com.example.store.dto.PagedResponse;
 import com.example.store.entity.Customer;
 
-/**
- * Service interface for customer operations following SOLID principles. Interface Segregation: Defines only
- * customer-related operations. Dependency Inversion: Depends on abstractions, not concrete implementations.
- */
+/** The interface Customer service. */
 public interface CustomerService {
 
     /**

@@ -1,5 +1,6 @@
 package com.example.store.service.impl;
 
+import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
 import com.example.store.entity.Product;
 import com.example.store.exception.ProductNotFoundException;
@@ -24,9 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for ProductServiceImpl following SOLID principles. Tests all business logic scenarios and corner cases.
- */
+/** The type Product service impl test. */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ProductServiceImpl Tests")
 class ProductServiceImplTest {
@@ -46,6 +45,7 @@ class ProductServiceImplTest {
     private Product product;
     private ProductDTO productDTO;
 
+    /** Sets up. */
     @BeforeEach
     void setUp() {
         product = new Product();
@@ -58,6 +58,7 @@ class ProductServiceImplTest {
         productDTO.setOrderIds(Arrays.asList(1L, 2L));
     }
 
+    /** Should retrieve all products successfully. */
     @Test
     @DisplayName("Should retrieve all products successfully")
     void shouldRetrieveAllProductsSuccessfully() {
@@ -78,12 +79,15 @@ class ProductServiceImplTest {
         verify(productMapper).productsToProductDTOs(products);
     }
 
+    /** Should create product successfully. */
     @Test
     @DisplayName("Should create product successfully")
     void shouldCreateProductSuccessfully() {
         // Given
-        Product productToCreate = new Product();
+        CreateProductRequest productToCreate = new CreateProductRequest();
         productToCreate.setDescription("Smartphone");
+        Product createdProduct = new Product();
+        createdProduct.setDescription("Smartphone");
         Product savedProduct = new Product();
         savedProduct.setId(2L);
         savedProduct.setDescription("Smartphone");
@@ -104,15 +108,16 @@ class ProductServiceImplTest {
         assertEquals(savedProductDTO, result);
         verify(validationService).validateProductDescription("Smartphone");
         verify(validationService).sanitizeDescription("Smartphone");
-        verify(productRepository).save(productToCreate);
+        verify(productRepository).save(createdProduct);
         verify(productMapper).productToProductDTO(savedProduct);
     }
 
+    /** Should throw validation exception when creating product with invalid description. */
     @Test
     @DisplayName("Should throw ValidationException when creating product with invalid description")
     void shouldThrowValidationExceptionWhenCreatingProductWithInvalidDescription() {
         // Given
-        Product productToCreate = new Product();
+        CreateProductRequest productToCreate = new CreateProductRequest();
         productToCreate.setDescription("");
 
         doThrow(new ValidationException("Required field 'description' is missing or empty"))
@@ -127,95 +132,7 @@ class ProductServiceImplTest {
         verify(productRepository, never()).save(any());
     }
 
-    @Test
-    @DisplayName("Should search products with valid query")
-    void shouldSearchProductsWithValidQuery() {
-        // Given
-        String query = "laptop";
-        List<Product> products = Arrays.asList(product);
-        List<ProductDTO> productDTOs = Arrays.asList(productDTO);
-
-        doNothing().when(validationService).validateSearchQuery(query);
-        when(productRepository.findByDescriptionContainingIgnoreCase(query)).thenReturn(products);
-        when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
-
-        // When
-        List<ProductDTO> result = productService.searchProductsByDescription(query);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(productDTO, result.get(0));
-        verify(validationService).validateSearchQuery(query);
-        verify(productRepository).findByDescriptionContainingIgnoreCase(query);
-        verify(productMapper).productsToProductDTOs(products);
-    }
-
-    @Test
-    @DisplayName("Should return all products when search query is null")
-    void shouldReturnAllProductsWhenSearchQueryIsNull() {
-        // Given
-        String query = null;
-        List<Product> products = Arrays.asList(product);
-        List<ProductDTO> productDTOs = Arrays.asList(productDTO);
-
-        doNothing().when(validationService).validateSearchQuery(query);
-        when(productRepository.findAll()).thenReturn(products);
-        when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
-
-        // When
-        List<ProductDTO> result = productService.searchProductsByDescription(query);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(validationService).validateSearchQuery(query);
-        verify(productRepository).findAll();
-        verify(productRepository, never()).findByDescriptionContainingIgnoreCase(any());
-    }
-
-    @Test
-    @DisplayName("Should return all products when search query is empty")
-    void shouldReturnAllProductsWhenSearchQueryIsEmpty() {
-        // Given
-        String query = "";
-        List<Product> products = Arrays.asList(product);
-        List<ProductDTO> productDTOs = Arrays.asList(productDTO);
-
-        doNothing().when(validationService).validateSearchQuery(query);
-        when(productRepository.findAll()).thenReturn(products);
-        when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
-
-        // When
-        List<ProductDTO> result = productService.searchProductsByDescription(query);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(validationService).validateSearchQuery(query);
-        verify(productRepository).findAll();
-        verify(productRepository, never()).findByDescriptionContainingIgnoreCase(any());
-    }
-
-    @Test
-    @DisplayName("Should throw ValidationException when search query is invalid")
-    void shouldThrowValidationExceptionWhenSearchQueryIsInvalid() {
-        // Given
-        String invalidQuery = "laptop123";
-
-        doThrow(new ValidationException("Search query contains invalid characters"))
-                .when(validationService)
-                .validateSearchQuery(invalidQuery);
-
-        // When & Then
-        ValidationException exception =
-                assertThrows(ValidationException.class, () -> productService.searchProductsByDescription(invalidQuery));
-        assertEquals("Search query contains invalid characters", exception.getMessage());
-        verify(validationService).validateSearchQuery(invalidQuery);
-        verify(productRepository, never()).findAll();
-        verify(productRepository, never()).findByDescriptionContainingIgnoreCase(any());
-    }
-
+    /** Should get product by id successfully. */
     @Test
     @DisplayName("Should get product by ID successfully")
     void shouldGetProductByIdSuccessfully() {
@@ -236,6 +153,7 @@ class ProductServiceImplTest {
         verify(productMapper).productToProductDTO(product);
     }
 
+    /** Should throw product not found exception when product not found by id. */
     @Test
     @DisplayName("Should throw ProductNotFoundException when product not found by ID")
     void shouldThrowProductNotFoundExceptionWhenProductNotFoundById() {
@@ -253,6 +171,7 @@ class ProductServiceImplTest {
         verify(productMapper, never()).productToProductDTO(any());
     }
 
+    /** Should update product successfully. */
     @Test
     @DisplayName("Should update product successfully")
     void shouldUpdateProductSuccessfully() {
@@ -288,6 +207,7 @@ class ProductServiceImplTest {
         verify(productMapper).productToProductDTO(savedProduct);
     }
 
+    /** Should throw product not found exception when updating non existent product. */
     @Test
     @DisplayName("Should throw ProductNotFoundException when updating non-existent product")
     void shouldThrowProductNotFoundExceptionWhenUpdatingNonExistentProduct() {
@@ -310,6 +230,20 @@ class ProductServiceImplTest {
         verify(productRepository, never()).save(any());
     }
 
+    /** Should handle repository exception gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception gracefully")
+    void shouldHandleRepositoryExceptionGracefully() {
+        // Given
+        when(productRepository.findAll()).thenThrow(new RuntimeException("Database connection failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> productService.getAllProducts());
+        assertEquals("Failed to retrieve products", exception.getMessage());
+        verify(productRepository).findAll();
+    }
+
+    /** Should delete product successfully. */
     @Test
     @DisplayName("Should delete product successfully")
     void shouldDeleteProductSuccessfully() {
@@ -327,6 +261,7 @@ class ProductServiceImplTest {
         verify(productRepository).deleteById(productId);
     }
 
+    /** Should throw product not found exception when deleting non-existent product. */
     @Test
     @DisplayName("Should throw ProductNotFoundException when deleting non-existent product")
     void shouldThrowProductNotFoundExceptionWhenDeletingNonExistentProduct() {
@@ -344,6 +279,76 @@ class ProductServiceImplTest {
         verify(productRepository, never()).deleteById(any());
     }
 
+    /** Should search products by description successfully. */
+    @Test
+    @DisplayName("Should search products by description successfully")
+    void shouldSearchProductsByDescriptionSuccessfully() {
+        // Given
+        String query = "laptop";
+        List<Product> products = Arrays.asList(product);
+        List<ProductDTO> productDTOs = Arrays.asList(productDTO);
+
+        doNothing().when(validationService).validateSearchQuery(query);
+        when(productRepository.findByDescriptionContainingIgnoreCase(query)).thenReturn(products);
+        when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
+
+        // When
+        List<ProductDTO> result = productService.searchProductsByDescription(query);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(productDTO, result.get(0));
+        verify(validationService).validateSearchQuery(query);
+        verify(productRepository).findByDescriptionContainingIgnoreCase(query);
+        verify(productMapper).productsToProductDTOs(products);
+    }
+
+    /** Should return all products when search query is empty. */
+    @Test
+    @DisplayName("Should return all products when search query is empty")
+    void shouldReturnAllProductsWhenSearchQueryIsEmpty() {
+        // Given
+        String query = "";
+        List<Product> products = Arrays.asList(product);
+        List<ProductDTO> productDTOs = Arrays.asList(productDTO);
+
+        doNothing().when(validationService).validateSearchQuery(query);
+        when(productRepository.findAll()).thenReturn(products);
+        when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
+
+        // When
+        List<ProductDTO> result = productService.searchProductsByDescription(query);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(productDTO, result.get(0));
+        verify(validationService).validateSearchQuery(query);
+        verify(productRepository).findAll();
+        verify(productMapper).productsToProductDTOs(products);
+    }
+
+    /** Should throw validation exception when search query is invalid. */
+    @Test
+    @DisplayName("Should throw ValidationException when search query is invalid")
+    void shouldThrowValidationExceptionWhenSearchQueryIsInvalid() {
+        // Given
+        String invalidQuery = "a"; // Too short
+
+        doThrow(new ValidationException("Invalid search query"))
+                .when(validationService)
+                .validateSearchQuery(invalidQuery);
+
+        // When & Then
+        ValidationException exception =
+                assertThrows(ValidationException.class, () -> productService.searchProductsByDescription(invalidQuery));
+        assertEquals("Invalid search query", exception.getMessage());
+        verify(validationService).validateSearchQuery(invalidQuery);
+        verify(productRepository, never()).findByDescriptionContainingIgnoreCase(any());
+    }
+
+    /** Should get products with orders successfully. */
     @Test
     @DisplayName("Should get products with orders successfully")
     void shouldGetProductsWithOrdersSuccessfully() {
@@ -364,6 +369,7 @@ class ProductServiceImplTest {
         verify(productMapper).productsToProductDTOs(products);
     }
 
+    /** Should get products without orders successfully. */
     @Test
     @DisplayName("Should get products without orders successfully")
     void shouldGetProductsWithoutOrdersSuccessfully() {
@@ -384,15 +390,70 @@ class ProductServiceImplTest {
         verify(productMapper).productsToProductDTOs(products);
     }
 
+    /** Should handle repository exception in search gracefully. */
     @Test
-    @DisplayName("Should handle repository exception gracefully")
-    void shouldHandleRepositoryExceptionGracefully() {
+    @DisplayName("Should handle repository exception in search gracefully")
+    void shouldHandleRepositoryExceptionInSearchGracefully() {
         // Given
-        when(productRepository.findAll()).thenThrow(new RuntimeException("Database connection failed"));
+        String query = "laptop";
+        doNothing().when(validationService).validateSearchQuery(query);
+        when(productRepository.findByDescriptionContainingIgnoreCase(query))
+                .thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> productService.getAllProducts());
-        assertEquals("Failed to retrieve products", exception.getMessage());
-        verify(productRepository).findAll();
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> productService.searchProductsByDescription(query));
+        assertEquals("Failed to search products", exception.getMessage());
+        verify(validationService).validateSearchQuery(query);
+        verify(productRepository).findByDescriptionContainingIgnoreCase(query);
+    }
+
+    /** Should handle repository exception in get products with orders gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception in get products with orders gracefully")
+    void shouldHandleRepositoryExceptionInGetProductsWithOrdersGracefully() {
+        // Given
+        when(productRepository.findProductsWithOrders()).thenThrow(new RuntimeException("Database connection failed"));
+
+        // When & Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> productService.getProductsWithOrders());
+        assertEquals("Failed to retrieve products with orders", exception.getMessage());
+        verify(productRepository).findProductsWithOrders();
+    }
+
+    /** Should handle repository exception in get products without orders gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception in get products without orders gracefully")
+    void shouldHandleRepositoryExceptionInGetProductsWithoutOrdersGracefully() {
+        // Given
+        when(productRepository.findProductsWithoutOrders())
+                .thenThrow(new RuntimeException("Database connection failed"));
+
+        // When & Then
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> productService.getProductsWithoutOrders());
+        assertEquals("Failed to retrieve products without orders", exception.getMessage());
+        verify(productRepository).findProductsWithoutOrders();
+    }
+
+    /** Should handle repository exception in delete gracefully. */
+    @Test
+    @DisplayName("Should handle repository exception in delete gracefully")
+    void shouldHandleRepositoryExceptionInDeleteGracefully() {
+        // Given
+        Long productId = 1L;
+        doNothing().when(validationService).validateProductId(productId);
+        when(productRepository.existsById(productId)).thenReturn(true);
+        doThrow(new RuntimeException("Database connection failed"))
+                .when(productRepository)
+                .deleteById(productId);
+
+        // When & Then
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> productService.deleteProduct(productId));
+        assertEquals("Failed to delete product", exception.getMessage());
+        verify(validationService).validateProductId(productId);
+        verify(productRepository).existsById(productId);
+        verify(productRepository).deleteById(productId);
     }
 }

@@ -4,10 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * Order DTO following SOLID principles. Single Responsibility: Represents order data transfer object with customer and
- * product information.
- */
+/** Order dto. */
 @Data
 public class OrderDTO {
     private Long id;
