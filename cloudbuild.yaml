@@ -213,6 +213,75 @@ steps:
     waitFor:
       - Push-Docker-Image
 
+
+  - name: 'gcr.io/cloud-builders/git'
+    id: Create-Git-Push
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Set up Git configuration
+        git config --global user.email "cloudbuild@inspire26.iam.gserviceaccount.com"
+        git config --global user.name "Cloud Build"
+        
+        # Get current branch name
+        CURRENT_BRANCH=${BRANCH_NAME}
+        echo "Current branch: $CURRENT_BRANCH"
+        
+        # Create/update README.md with JaCoCo report link
+        JACOCO_LINK="https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$CURRENT_BRANCH/index.html"
+        echo "JaCoCo Report Link: $JACOCO_LINK"
+        
+        # Check if README.md exists, if not create it
+        if [ ! -f "README.md" ]; then
+          echo "# Project Build Status" > README.md
+          echo "" >> README.md
+          echo "[![Build Status](https://storage.googleapis.com/${_BADGE_BUCKET}/builds/main/status.svg)](https://console.cloud.google.com/cloud-build/builds?project=inspire26)" >> README.md
+          echo "[![Coverage](https://storage.googleapis.com/${_BADGE_BUCKET}/coverage/coverage.svg)]($JACOCO_LINK)" >> README.md
+          echo "" >> README.md
+          echo "## Test Coverage Report" >> README.md
+          echo "Latest coverage report: [$JACOCO_LINK]($JACOCO_LINK)" >> README.md
+        else
+          # Update existing README.md with new JaCoCo link
+          # Replace existing JaCoCo links with new ones
+          sed -i "s|https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/[^)]*|$JACOCO_LINK|g" README.md
+        
+          # If no JaCoCo link exists, add coverage section
+          if ! grep -q "coverage report" README.md; then
+            echo "" >> README.md
+            echo "## Test Coverage Report" >> README.md
+            echo "Latest coverage report: [$JACOCO_LINK]($JACOCO_LINK)" >> README.md
+          fi
+        fi
+        
+        # Check if there are any changes to commit
+        if git diff --quiet README.md; then
+          echo "No changes to README.md, skipping commit"
+        else
+          # Stage and commit changes
+          git add README.md
+          git commit -m "Update JaCoCo coverage report link for branch: $CURRENT_BRANCH [skip ci]"
+        
+          # Set up authentication for GitHub push (assuming you have a GitHub token in Secret Manager)
+          gcloud secrets versions access latest --secret=GITHUB_TOKEN --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/github-token.txt
+          GITHUB_TOKEN=$(cat /workspace/github-token.txt)
+        
+          # Configure Git to use the token for authentication
+          git remote set-url origin https://oauth2:$GITHUB_TOKEN@github.com/YOUR_USERNAME/YOUR_REPO.git
+        
+          # Push changes to the current branch
+          git push origin $CURRENT_BRANCH
+        
+          echo "Successfully updated JaCoCo report link and pushed to GitHub"
+        fi
+        
+        # Clean up token file
+        rm -f /workspace/github-token.txt
+        
+        echo "Git push stage completed successfully"
+    waitFor:
+      - Push-Docker-Image
+
   # Create FAILURE badge - runs on any step failure
   - name: 'gcr.io/cloud-builders/gsutil'
     id: Create-Failure-Badge
@@ -259,7 +328,7 @@ steps:
 artifacts:
   objects:
     location: 'gs://${_BUCKET_NAME}/jacoco/latest/'
-    paths: ['build/reports/jacoco/test/html']
+    paths: ['build/reports/jacoco/test/html/*']
 
 options:
   logging: CLOUD_LOGGING_ONLY
