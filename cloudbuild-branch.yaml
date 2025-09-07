@@ -229,27 +229,27 @@ steps:
           
           # Create/update README.md with JaCoCo report link
           JACOCO_LINK="https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$$CURRENT_BRANCH/index.html"
-          echo "JaCoCo Report Link: $JACOCO_LINK"
+          echo "JaCoCo Report Link: $$JACOCO_LINK"
           
           # Check if README.md exists, if not create it
           if [ ! -f "README.md" ]; then
             echo "# Project Build Status" > README.md
             echo "" >> README.md
             echo "[![Build Status](https://storage.googleapis.com/${_BADGE_BUCKET}/builds/main/status.svg)](https://console.cloud.google.com/cloud-build/builds?project=inspire26)" >> README.md
-            echo "[![Coverage](https://storage.googleapis.com/${_BADGE_BUCKET}/coverage/coverage.svg)]($JACOCO_LINK)" >> README.md
+            echo "[![Coverage](https://storage.googleapis.com/${_BADGE_BUCKET}/coverage/coverage.svg)]($$JACOCO_LINK)" >> README.md
             echo "" >> README.md
             echo "## Test Coverage Report" >> README.md
-            echo "Latest coverage report: [$JACOCO_LINK]($JACOCO_LINK)" >> README.md
+            echo "Latest coverage report: [$$JACOCO_LINK]($$JACOCO_LINK)" >> README.md
           else
             # Update existing README.md with new JaCoCo link
             # Replace existing JaCoCo links with new ones
-            sed -i "s|https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/[^)]*|$JACOCO_LINK|g" README.md
+            sed -i "s|https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/[^)]*|$$JACOCO_LINK|g" README.md
           
             # If no JaCoCo link exists, add coverage section
             if ! grep -q "coverage report" README.md; then
               echo "" >> README.md
               echo "## Test Coverage Report" >> README.md
-              echo "Latest coverage report: [$JACOCO_LINK]($JACOCO_LINK)" >> README.md
+              echo "Latest coverage report: [$$JACOCO_LINK]($$JACOCO_LINK)" >> README.md
             fi
           fi
           
@@ -266,7 +266,7 @@ steps:
             GITHUB_TOKEN=$(cat /workspace/github-token.txt)
           
             # Configure Git to use the token for authentication
-            git remote set-url origin https://oauth2:$GITHUB_TOKEN@github.com/YOUR_USERNAME/YOUR_REPO.git
+            git remote set-url origin https://oauth2:$$GITHUB_TOKEN@github.com/abhijithanil/store.git
           
             # Push changes to the current branch
             git push origin $$CURRENT_BRANCH

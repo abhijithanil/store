@@ -267,7 +267,7 @@ steps:
           GITHUB_TOKEN=$(cat /workspace/github-token.txt)
         
           # Configure Git to use the token for authentication
-          git remote set-url origin https://oauth2:$GITHUB_TOKEN@github.com/YOUR_USERNAME/YOUR_REPO.git
+          git remote set-url origin https://oauth2:$$GITHUB_TOKEN@github.com/abhijithanil/store.git
         
           # Push changes to the current branch
           git push origin $$CURRENT_BRANCH
