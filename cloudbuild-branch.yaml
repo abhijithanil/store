@@ -225,10 +225,10 @@ steps:
           
           # Get current branch name
           CURRENT_BRANCH=${BRANCH_NAME}
-          echo "Current branch: $CURRENT_BRANCH"
+          echo "Current branch: $$CURRENT_BRANCH"
           
           # Create/update README.md with JaCoCo report link
-          JACOCO_LINK="https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$CURRENT_BRANCH/index.html"
+          JACOCO_LINK="https://storage.googleapis.com/${_BUCKET_NAME}/jacoco/$$CURRENT_BRANCH/index.html"
           echo "JaCoCo Report Link: $JACOCO_LINK"
           
           # Check if README.md exists, if not create it
@@ -259,7 +259,7 @@ steps:
           else
             # Stage and commit changes
             git add README.md
-            git commit -m "Update JaCoCo coverage report link for branch: $CURRENT_BRANCH [skip ci]"
+            git commit -m "Update JaCoCo coverage report link for branch: $$CURRENT_BRANCH [skip ci]"
           
             # Set up authentication for GitHub push (assuming you have a GitHub token in Secret Manager)
             gcloud secrets versions access latest --secret=GITHUB_TOKEN --project=inspire26 --format='get(payload.data)' | tr '_-' '/+' | base64 -d > /workspace/github-token.txt
@@ -269,7 +269,7 @@ steps:
             git remote set-url origin https://oauth2:$GITHUB_TOKEN@github.com/YOUR_USERNAME/YOUR_REPO.git
           
             # Push changes to the current branch
-            git push origin $CURRENT_BRANCH
+            git push origin $$CURRENT_BRANCH
           
             echo "Successfully updated JaCoCo report link and pushed to GitHub"
           fi
