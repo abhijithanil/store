@@ -271,8 +271,8 @@ class ProductServiceImplTest {
         when(productRepository.existsById(productId)).thenReturn(false);
 
         // When & Then
-        ProductNotFoundException exception = assertThrows(
-                ProductNotFoundException.class, () -> productService.deleteProduct(productId));
+        ProductNotFoundException exception =
+                assertThrows(ProductNotFoundException.class, () -> productService.deleteProduct(productId));
         assertEquals("Product not found with ID: 999", exception.getMessage());
         verify(validationService).validateProductId(productId);
         verify(productRepository).existsById(productId);
@@ -287,7 +287,7 @@ class ProductServiceImplTest {
         String query = "laptop";
         List<Product> products = Arrays.asList(product);
         List<ProductDTO> productDTOs = Arrays.asList(productDTO);
-        
+
         doNothing().when(validationService).validateSearchQuery(query);
         when(productRepository.findByDescriptionContainingIgnoreCase(query)).thenReturn(products);
         when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
@@ -312,7 +312,7 @@ class ProductServiceImplTest {
         String query = "";
         List<Product> products = Arrays.asList(product);
         List<ProductDTO> productDTOs = Arrays.asList(productDTO);
-        
+
         doNothing().when(validationService).validateSearchQuery(query);
         when(productRepository.findAll()).thenReturn(products);
         when(productMapper.productsToProductDTOs(products)).thenReturn(productDTOs);
@@ -341,8 +341,8 @@ class ProductServiceImplTest {
                 .validateSearchQuery(invalidQuery);
 
         // When & Then
-        ValidationException exception = assertThrows(
-                ValidationException.class, () -> productService.searchProductsByDescription(invalidQuery));
+        ValidationException exception =
+                assertThrows(ValidationException.class, () -> productService.searchProductsByDescription(invalidQuery));
         assertEquals("Invalid search query", exception.getMessage());
         verify(validationService).validateSearchQuery(invalidQuery);
         verify(productRepository, never()).findByDescriptionContainingIgnoreCase(any());
@@ -401,8 +401,8 @@ class ProductServiceImplTest {
                 .thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> productService.searchProductsByDescription(query));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> productService.searchProductsByDescription(query));
         assertEquals("Failed to search products", exception.getMessage());
         verify(validationService).validateSearchQuery(query);
         verify(productRepository).findByDescriptionContainingIgnoreCase(query);
@@ -413,12 +413,10 @@ class ProductServiceImplTest {
     @DisplayName("Should handle repository exception in get products with orders gracefully")
     void shouldHandleRepositoryExceptionInGetProductsWithOrdersGracefully() {
         // Given
-        when(productRepository.findProductsWithOrders())
-                .thenThrow(new RuntimeException("Database connection failed"));
+        when(productRepository.findProductsWithOrders()).thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> productService.getProductsWithOrders());
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> productService.getProductsWithOrders());
         assertEquals("Failed to retrieve products with orders", exception.getMessage());
         verify(productRepository).findProductsWithOrders();
     }
@@ -432,8 +430,8 @@ class ProductServiceImplTest {
                 .thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> productService.getProductsWithoutOrders());
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> productService.getProductsWithoutOrders());
         assertEquals("Failed to retrieve products without orders", exception.getMessage());
         verify(productRepository).findProductsWithoutOrders();
     }
@@ -447,11 +445,12 @@ class ProductServiceImplTest {
         doNothing().when(validationService).validateProductId(productId);
         when(productRepository.existsById(productId)).thenReturn(true);
         doThrow(new RuntimeException("Database connection failed"))
-                .when(productRepository).deleteById(productId);
+                .when(productRepository)
+                .deleteById(productId);
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> productService.deleteProduct(productId));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> productService.deleteProduct(productId));
         assertEquals("Failed to delete product", exception.getMessage());
         verify(validationService).validateProductId(productId);
         verify(productRepository).existsById(productId);

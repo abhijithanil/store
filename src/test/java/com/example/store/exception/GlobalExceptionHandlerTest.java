@@ -10,12 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,7 +49,8 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(fieldError, globalError));
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationExceptions(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleValidationExceptions(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -72,7 +71,8 @@ class GlobalExceptionHandlerTest {
         CustomerNotFoundException exception = new CustomerNotFoundException("Customer not found with ID: 999");
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCustomerNotFoundException(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleCustomerNotFoundException(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -91,7 +91,8 @@ class GlobalExceptionHandlerTest {
         OrderNotFoundException exception = new OrderNotFoundException("Order not found with ID: 999");
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleOrderNotFoundException(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleOrderNotFoundException(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -110,7 +111,8 @@ class GlobalExceptionHandlerTest {
         ProductNotFoundException exception = new ProductNotFoundException("Product not found with ID: 999");
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleProductNotFoundException(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleProductNotFoundException(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -129,7 +131,8 @@ class GlobalExceptionHandlerTest {
         ValidationException exception = new ValidationException("Invalid input provided");
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationException(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleValidationException(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -148,7 +151,8 @@ class GlobalExceptionHandlerTest {
         IllegalArgumentException exception = new IllegalArgumentException("Invalid argument provided");
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleIllegalArgumentException(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleIllegalArgumentException(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -174,7 +178,8 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("An unexpected error occurred", response.getBody().getMessage());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
+        assertEquals(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
         assertNull(response.getBody().getValidationErrors());
     }
 
@@ -193,7 +198,8 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("An unexpected error occurred", response.getBody().getMessage());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
+        assertEquals(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
         assertNull(response.getBody().getValidationErrors());
     }
 
@@ -211,7 +217,8 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(fieldError1, fieldError2));
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationExceptions(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleValidationExceptions(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -222,8 +229,10 @@ class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody().getValidationErrors());
         assertTrue(response.getBody().getValidationErrors().containsKey("name"));
         assertTrue(response.getBody().getValidationErrors().containsKey("email"));
-        assertEquals("Name is required", response.getBody().getValidationErrors().get("name"));
-        assertEquals("Email is invalid", response.getBody().getValidationErrors().get("email"));
+        assertEquals(
+                "Name is required", response.getBody().getValidationErrors().get("name"));
+        assertEquals(
+                "Email is invalid", response.getBody().getValidationErrors().get("email"));
     }
 
     /** Should handle validation exceptions with only global errors. */
@@ -239,7 +248,8 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getAllErrors()).thenReturn(Arrays.asList(globalError));
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationExceptions(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleValidationExceptions(exception, webRequest);
 
         // Then
         assertNotNull(response);
@@ -249,7 +259,9 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.getBody().getStatus());
         assertNotNull(response.getBody().getValidationErrors());
         assertTrue(response.getBody().getValidationErrors().containsKey("global"));
-        assertEquals("Customer validation failed", response.getBody().getValidationErrors().get("global"));
+        assertEquals(
+                "Customer validation failed",
+                response.getBody().getValidationErrors().get("global"));
     }
 
     /** Should handle validation exceptions with no errors. */
@@ -264,7 +276,8 @@ class GlobalExceptionHandlerTest {
         when(bindingResult.getAllErrors()).thenReturn(Arrays.asList());
 
         // When
-        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleValidationExceptions(exception, webRequest);
+        ResponseEntity<ErrorResponse> response =
+                globalExceptionHandler.handleValidationExceptions(exception, webRequest);
 
         // Then
         assertNotNull(response);

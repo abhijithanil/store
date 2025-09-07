@@ -91,7 +91,7 @@ class OrderServiceImplTest {
         List<Order> orders = Arrays.asList(order);
         Page<Order> orderPage = new PageImpl<>(orders);
         List<OrderDTO> orderDTOs = Arrays.asList(orderDTO);
-        
+
         when(orderRepository.findAll(any(Pageable.class))).thenReturn(orderPage);
         when(orderMapper.orderToOrderDTO(any(Order.class))).thenReturn(orderDTO);
 
@@ -271,8 +271,8 @@ class OrderServiceImplTest {
         when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> orderService.createOrder(createOrderRequest));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> orderService.createOrder(createOrderRequest));
         assertEquals("Customer not found with ID: 1", exception.getMessage());
         verify(customerRepository).findById(1L);
         verify(productRepository, never()).findAllById(any());
@@ -287,8 +287,7 @@ class OrderServiceImplTest {
         when(orderRepository.findAll()).thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> orderService.getAllOrders());
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> orderService.getAllOrders());
         assertEquals("Database connection failed", exception.getMessage());
         verify(orderRepository).findAll();
     }
@@ -302,8 +301,7 @@ class OrderServiceImplTest {
         when(orderRepository.findById(orderId)).thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> orderService.getOrderById(orderId));
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> orderService.getOrderById(orderId));
         assertEquals("Database connection failed", exception.getMessage());
         verify(orderRepository).findById(orderId);
     }
@@ -318,8 +316,8 @@ class OrderServiceImplTest {
         when(orderRepository.save(any(Order.class))).thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> orderService.createOrder(createOrderRequest));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> orderService.createOrder(createOrderRequest));
         assertEquals("Database connection failed", exception.getMessage());
         verify(customerRepository).findById(1L);
         verify(productRepository).findAllById(Arrays.asList(1L));
@@ -331,11 +329,12 @@ class OrderServiceImplTest {
     @DisplayName("Should handle repository exception in get all orders with pagination gracefully")
     void shouldHandleRepositoryExceptionInGetAllOrdersWithPaginationGracefully() {
         // Given
-        when(orderRepository.findAll(any(Pageable.class))).thenThrow(new RuntimeException("Database connection failed"));
+        when(orderRepository.findAll(any(Pageable.class)))
+                .thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> orderService.getAllOrders(0, 10, "id", "asc"));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> orderService.getAllOrders(0, 10, "id", "asc"));
         assertEquals("Database connection failed", exception.getMessage());
         verify(orderRepository).findAll(any(Pageable.class));
     }

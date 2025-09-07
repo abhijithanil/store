@@ -2,7 +2,6 @@ package com.example.store.controller;
 
 import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
-import com.example.store.entity.Product;
 import com.example.store.service.ProductService;
 
 import jakarta.validation.Valid;

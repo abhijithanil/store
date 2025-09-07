@@ -298,8 +298,8 @@ class ValidationServiceTest {
         String nullDescription = null;
 
         // When & Then
-        ValidationException exception =
-                assertThrows(ValidationException.class, () -> validationService.validateProductDescription(nullDescription));
+        ValidationException exception = assertThrows(
+                ValidationException.class, () -> validationService.validateProductDescription(nullDescription));
         assertEquals("Required field 'description' is missing or empty", exception.getMessage());
     }
 
@@ -311,8 +311,8 @@ class ValidationServiceTest {
         String emptyDescription = "";
 
         // When & Then
-        ValidationException exception =
-                assertThrows(ValidationException.class, () -> validationService.validateProductDescription(emptyDescription));
+        ValidationException exception = assertThrows(
+                ValidationException.class, () -> validationService.validateProductDescription(emptyDescription));
         assertEquals("Required field 'description' is missing or empty", exception.getMessage());
     }
 
@@ -324,8 +324,8 @@ class ValidationServiceTest {
         String whitespaceDescription = "   ";
 
         // When & Then
-        ValidationException exception =
-                assertThrows(ValidationException.class, () -> validationService.validateProductDescription(whitespaceDescription));
+        ValidationException exception = assertThrows(
+                ValidationException.class, () -> validationService.validateProductDescription(whitespaceDescription));
         assertEquals("Required field 'description' is missing or empty", exception.getMessage());
     }
 
@@ -337,9 +337,11 @@ class ValidationServiceTest {
         String invalidDescription = "Laptop@#$%";
 
         // When & Then
-        ValidationException exception =
-                assertThrows(ValidationException.class, () -> validationService.validateProductDescription(invalidDescription));
-        assertEquals("Invalid input for field 'description': Description can only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas", exception.getMessage());
+        ValidationException exception = assertThrows(
+                ValidationException.class, () -> validationService.validateProductDescription(invalidDescription));
+        assertEquals(
+                "Invalid input for field 'description': Description can only contain letters, numbers, spaces, hyphens, apostrophes, periods, and commas",
+                exception.getMessage());
     }
 
     /** Should validate valid product id. */

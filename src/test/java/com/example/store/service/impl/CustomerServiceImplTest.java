@@ -15,15 +15,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -159,9 +157,10 @@ class CustomerServiceImplTest {
         String query = "john";
         List<Customer> customers = Arrays.asList(customer);
         Page<Customer> customerPage = new PageImpl<>(customers);
-        
+
         doNothing().when(validationService).validateSearchQuery(query);
-        when(customerRepository.findByNameContainingIgnoreCase(eq(query), any(Pageable.class))).thenReturn(customerPage);
+        when(customerRepository.findByNameContainingIgnoreCase(eq(query), any(Pageable.class)))
+                .thenReturn(customerPage);
 
         // When
         customerService.searchCustomersByName(query, 0, 10, "name", "asc");
@@ -179,7 +178,7 @@ class CustomerServiceImplTest {
         String query = "";
         List<Customer> customers = Arrays.asList(customer);
         Page<Customer> customerPage = new PageImpl<>(customers);
-        
+
         doNothing().when(validationService).validateSearchQuery(query);
         when(customerRepository.findAll(any(Pageable.class))).thenReturn(customerPage);
 
@@ -204,7 +203,8 @@ class CustomerServiceImplTest {
 
         // When & Then
         ValidationException exception = assertThrows(
-                ValidationException.class, () -> customerService.searchCustomersByName(invalidQuery, 0, 10, "name", "asc"));
+                ValidationException.class,
+                () -> customerService.searchCustomersByName(invalidQuery, 0, 10, "name", "asc"));
         assertEquals("Invalid search query", exception.getMessage());
         verify(validationService).validateSearchQuery(invalidQuery);
         verify(customerRepository, never()).findByNameContainingIgnoreCase(any(), any());
@@ -217,7 +217,8 @@ class CustomerServiceImplTest {
         // Given
         String query = "john";
         doNothing().when(validationService).validateSearchQuery(query);
-        when(customerRepository.findByNameContainingIgnoreCase(eq(query), any(org.springframework.data.domain.Pageable.class)))
+        when(customerRepository.findByNameContainingIgnoreCase(
+                        eq(query), any(org.springframework.data.domain.Pageable.class)))
                 .thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
@@ -225,7 +226,8 @@ class CustomerServiceImplTest {
                 RuntimeException.class, () -> customerService.searchCustomersByName(query, 0, 10, "name", "asc"));
         assertEquals("Failed to search customers", exception.getMessage());
         verify(validationService).validateSearchQuery(query);
-        verify(customerRepository).findByNameContainingIgnoreCase(eq(query), any(org.springframework.data.domain.Pageable.class));
+        verify(customerRepository)
+                .findByNameContainingIgnoreCase(eq(query), any(org.springframework.data.domain.Pageable.class));
     }
 
     /** Should handle repository exception in create gracefully. */
@@ -242,8 +244,8 @@ class CustomerServiceImplTest {
                 .thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> customerService.createCustomer(customerToCreate));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> customerService.createCustomer(customerToCreate));
         assertEquals("Failed to create customer", exception.getMessage());
         verify(validationService).validateCustomerName("Jane Smith");
         verify(validationService).sanitizeName("Jane Smith");
@@ -257,12 +259,11 @@ class CustomerServiceImplTest {
         // Given
         Long customerId = 1L;
         doNothing().when(validationService).validateCustomerId(customerId);
-        when(customerRepository.findById(customerId))
-                .thenThrow(new RuntimeException("Database connection failed"));
+        when(customerRepository.findById(customerId)).thenThrow(new RuntimeException("Database connection failed"));
 
         // When & Then
-        RuntimeException exception = assertThrows(
-                RuntimeException.class, () -> customerService.getCustomerById(customerId));
+        RuntimeException exception =
+                assertThrows(RuntimeException.class, () -> customerService.getCustomerById(customerId));
         assertEquals("Failed to retrieve customer", exception.getMessage());
         verify(validationService).validateCustomerId(customerId);
         verify(customerRepository).findById(customerId);

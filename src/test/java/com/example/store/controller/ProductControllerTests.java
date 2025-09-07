@@ -2,7 +2,6 @@ package com.example.store.controller;
 
 import com.example.store.dto.CreateProductRequest;
 import com.example.store.dto.ProductDTO;
-import com.example.store.entity.Product;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
